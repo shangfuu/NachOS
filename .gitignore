@@ -1,6 +1,7 @@
 # Desktop Services Store
 *.DS_Store
-
+# swap files
+.*.*.swp
 # Object File 
 *.o
 #*.s
