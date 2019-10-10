@@ -50,14 +50,56 @@ void
 Alarm::CallBack() 
 {
     Interrupt *interrupt = kernel->interrupt;
-    MachineStatus status = interrupt->getStatus();
-    
-    if (status == IdleMode) {	// is it time to quit?
+    MachineStatus status = interrupt->getStatus();	
+	
+	Thread *thread;
+	bool WakeUp = false;
+	while((thread = kernel->scheduler->WakeUp()) != NULL){
+//		cout << "some one wakeup" << endl;
+		kernel->scheduler->ReadyToRun(thread);
+		kernel->scheduler->PopBlock(thread);
+//		kernel->scheduler->Print();
+//		cout << endl;
+		WakeUp = true;
+	}
+	if(WakeUp){
+		return;
+	}
+
+	// Check also Block status 
+    if (status == IdleMode && kernel->scheduler->IsBlockEmpty()) {	// is it time to quit?
         if (!interrupt->AnyFutureInterrupts()) {
 	    timer->Disable();	// turn off the timer
 	}
     } else {			// there's someone to preempt
-	interrupt->YieldOnReturn();
+ 	interrupt->YieldOnReturn();
+//	cout << "Total Ticks: " << kernel->stats->totalTicks << "ms" << endl;
     }
 }
+
+
+//-------------------------------------
+// Alarm::WaitUntil()
+// Suspend execution until time > now + x
+// **Writen by @shungfu**
+//-------------------------------------
+
+void
+Alarm::WaitUntil(int x)
+{
+	// turn off the interrupt
+	IntStatus oldLevel = kernel->interrupt->SetLevel(IntOff);
+	
+	Thread *thread = kernel->currentThread;
+	thread->SetSleepTime(x);
+	
+	// Make the thread Sleep
+//	cout << "Thread goes Sleep" << endl;
+	thread->Sleep(false);
+
+	// turn on the interrupt
+	kernel->interrupt->SetLevel(oldLevel);
+}
+
+
 

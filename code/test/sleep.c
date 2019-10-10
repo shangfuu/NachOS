@@ -3,7 +3,8 @@
 main(){
 		int i;
 		for(i=0;i<5;i++){
-			Sleep(10000000);
-			PrintInt(i);
+//			PrintInt(222);
+			Sleep(1000000);
+			PrintInt(222);
 		}
 }

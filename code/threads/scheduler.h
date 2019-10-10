@@ -13,6 +13,8 @@
 #include "list.h"
 #include "thread.h"
 
+#include <list>
+
 // The following class defines the scheduler/dispatcher abstraction -- 
 // the data structures and operations needed to keep track of which 
 // thread is running, and which threads are ready but not running.
@@ -40,12 +42,20 @@ class Scheduler {
     
     // SelfTest for scheduler is implemented in class Thread
     
+	/* Writen bu @shungfu */
+	void Blocked(Thread * thread);	// Thread are being Blocked
+	Thread* WakeUp();	// Check if thread can be ReadyToRun
+	void PopBlock(Thread*thread){blockList->remove(thread);}
+	bool IsBlockEmpty(){return blockList->empty();}
   private:
 	SchedulerType schedulerType;
 	List<Thread *> *readyList;	// queue of threads that are ready to run,
 					// but not running
 	Thread *toBeDestroyed;		// finishing thread to be destroyed
     					// by the next thread that runs
+
+	/* Writen by @shungfu */
+	std::list<Thread *> *blockList;	// queue of threads that are blocked
 };
 
 #endif // SCHEDULER_H

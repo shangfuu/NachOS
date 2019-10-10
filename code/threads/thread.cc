@@ -44,6 +44,9 @@ Thread::Thread(char* threadName)
 					// new thread ignores contents 
 					// of machine registers
     }
+
+	/* Writen by @shungfu */
+	sleep_time = 0;
 #ifdef USER_PROGRAM
     space = NULL;
 #endif
@@ -242,18 +245,24 @@ void
 Thread::Sleep (bool finishing)
 {
     Thread *nextThread;
-    
+	
+//	kernel->scheduler->Print();
+	    
     ASSERT(this == kernel->currentThread);
     ASSERT(kernel->interrupt->getLevel() == IntOff);
     
     DEBUG(dbgThread, "Sleeping thread: " << name);
-
     status = BLOCKED;
-    while ((nextThread = kernel->scheduler->FindNextToRun()) == NULL)
+
+	if(!finishing){
+		kernel->scheduler->Blocked(this);
+	}
+	
+    while ((nextThread = kernel->scheduler->FindNextToRun()) == NULL){
 	kernel->interrupt->Idle();	// no one to run, wait for an interrupt
-    
+	}
     // returns when it's time for us to run
-    kernel->scheduler->Run(nextThread, finishing); 
+    kernel->scheduler->Run(nextThread, finishing);
 }
 
 //----------------------------------------------------------------------
@@ -436,4 +445,14 @@ Thread::SelfTest()
     t->Fork((VoidFunctionPtr) SimpleThread, (void *) 1);
     SimpleThread(0);
 }
+
+
+/* Writen by @shungfu */
+void
+Thread::SetSleepTime(int time)
+{	
+	sleep_time = kernel->stats->totalTicks + time;
+	cout << "Total Ticks: " << kernel->stats->totalTicks << ", sleep until: " << sleep_time << endl;
+}
+
 

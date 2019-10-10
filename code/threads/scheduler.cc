@@ -34,6 +34,8 @@ Scheduler::Scheduler()
 //	schedulerType = type;
 	readyList = new List<Thread *>; 
 	toBeDestroyed = NULL;
+	/* Writen by @shungfu */
+	blockList = new std::list<Thread*>;
 } 
 
 //----------------------------------------------------------------------
@@ -44,6 +46,7 @@ Scheduler::Scheduler()
 Scheduler::~Scheduler()
 { 
     delete readyList; 
+	delete blockList;
 } 
 
 //----------------------------------------------------------------------
@@ -184,3 +187,37 @@ Scheduler::Print()
     cout << "Ready list contents:\n";
     readyList->Apply(ThreadPrint);
 }
+
+//--------------------------------
+// Writen by @shungfu
+// Threads that being Blocked
+//--------------------------------
+void
+Scheduler::Blocked(Thread * thread)
+{
+	ASSERT(kernel->interrupt->getLevel() == IntOff);
+	DEBUG(dbgThread,"Putting thread on Block List: " << thread->getName());	
+
+	thread->setStatus(BLOCKED);
+	blockList->push_back(thread);
+	cout << "Block list size: " << blockList->size() << endl;
+}
+
+//-----------------------
+// Check if thread can be ReadyToRun
+//-----------------------
+Thread *
+Scheduler::WakeUp()
+{
+	std::list<Thread*>::iterator ptr = blockList->begin();
+	for(; ptr != blockList->end();)
+	{
+		if((*ptr)->getSleepTime() <= kernel->stats->totalTicks){
+			return *ptr;
+		}
+		ptr++;
+	}
+	return NULL;	
+}
+
+

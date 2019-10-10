@@ -87,6 +87,7 @@ ExceptionHandler(ExceptionType which)
 		case SC_Sleep:
 			val = kernel->machine->ReadRegister(4);
 			cout << "Sleep Value:" << val << endl;
+			kernel->alarm->WaitUntil(val);
 			return;
 		default:
 		    cerr << "Unexpected system call " << type << "\n";
