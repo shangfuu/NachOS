@@ -200,7 +200,6 @@ Scheduler::Blocked(Thread * thread)
 
 	thread->setStatus(BLOCKED);
 	blockList->push_back(thread);
-	cout << "Block list size: " << blockList->size() << endl;
 }
 
 //-----------------------

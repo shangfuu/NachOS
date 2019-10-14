@@ -73,7 +73,7 @@ Alarm::CallBack()
 	}
     } else {			// there's someone to preempt
  	interrupt->YieldOnReturn();
-//	cout << "Total Ticks: " << kernel->stats->totalTicks << "ms" << endl;
+//	cout << "Total Ticks: " << kernel->stats->totalTicks << endl;
     }
 }
 
