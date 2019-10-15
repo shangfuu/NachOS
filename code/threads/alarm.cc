@@ -54,13 +54,13 @@ Alarm::CallBack()
 	
 	Thread *thread;
 	bool WakeUp = false;
+
+    // if someone to wakeup, then put it back to ready list,and pop
 	if(kernel->scheduler->WakeUp()){
-//		kernel->scheduler->Print();
-//		cout << endl;
 		WakeUp = true;
 	}
 
-	// Check also Block status 
+	// Check also Block status, and if someone wakeup do context switch
     if (status == IdleMode && kernel->scheduler->IsBlockEmpty() && !WakeUp) {	// is it time to quit?
         if (!interrupt->AnyFutureInterrupts()) {
 	    timer->Disable();	// turn off the timer

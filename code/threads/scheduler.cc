@@ -211,8 +211,10 @@ Scheduler::WakeUp()
     bool toReady = false;
     Thread* now;
 	std::list<Thread*>::iterator ptr = blockList->begin();
-	for(; ptr != blockList->end();)
+	// check every thread, if there's someone to wakeup
+    for(; ptr != blockList->end();)
 	{
+        // Time to WakeUp, put it to ready list and pop it
 		if((*ptr)->getSleepTime() <= kernel->stats->totalTicks){
             now = *ptr;
             ptr++;
@@ -220,12 +222,10 @@ Scheduler::WakeUp()
             kernel->scheduler->PopBlock(now);
             toReady = true;
             continue;
-//            return *ptr;
 		}
 		ptr++;
 	}
     return toReady;
-//	return NULL;	
 }
 
 
