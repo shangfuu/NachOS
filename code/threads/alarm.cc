@@ -54,20 +54,14 @@ Alarm::CallBack()
 	
 	Thread *thread;
 	bool WakeUp = false;
-	while((thread = kernel->scheduler->WakeUp()) != NULL){
-//		cout << "some one wakeup" << endl;
-		kernel->scheduler->ReadyToRun(thread);
-		kernel->scheduler->PopBlock(thread);
+	if(kernel->scheduler->WakeUp()){
 //		kernel->scheduler->Print();
 //		cout << endl;
 		WakeUp = true;
 	}
-	if(WakeUp){
-		return;
-	}
 
 	// Check also Block status 
-    if (status == IdleMode && kernel->scheduler->IsBlockEmpty()) {	// is it time to quit?
+    if (status == IdleMode && kernel->scheduler->IsBlockEmpty() && !WakeUp) {	// is it time to quit?
         if (!interrupt->AnyFutureInterrupts()) {
 	    timer->Disable();	// turn off the timer
 	}

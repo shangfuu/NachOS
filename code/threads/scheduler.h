@@ -44,7 +44,7 @@ class Scheduler {
     
 	/* Writen bu @shungfu */
 	void Blocked(Thread * thread);	// Thread are being Blocked
-	Thread* WakeUp();	// Check if thread can be ReadyToRun
+	bool WakeUp();	// Check if thread can be ReadyToRun
 	void PopBlock(Thread*thread){blockList->remove(thread);}
 	bool IsBlockEmpty(){return blockList->empty();}
   private:

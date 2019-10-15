@@ -205,18 +205,27 @@ Scheduler::Blocked(Thread * thread)
 //-----------------------
 // Check if thread can be ReadyToRun
 //-----------------------
-Thread *
+bool
 Scheduler::WakeUp()
 {
+    bool toReady = false;
+    Thread* now;
 	std::list<Thread*>::iterator ptr = blockList->begin();
 	for(; ptr != blockList->end();)
 	{
 		if((*ptr)->getSleepTime() <= kernel->stats->totalTicks){
-			return *ptr;
+            now = *ptr;
+            ptr++;
+            kernel->scheduler->ReadyToRun(now);
+            kernel->scheduler->PopBlock(now);
+            toReady = true;
+            continue;
+//            return *ptr;
 		}
 		ptr++;
 	}
-	return NULL;	
+    return toReady;
+//	return NULL;	
 }
 
 
