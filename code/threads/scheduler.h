@@ -22,12 +22,14 @@
 enum SchedulerType {
         RR,     // Round Robin
         SJF,
-        Priority
+        Priority,
+	FIFO
 };
 
 class Scheduler {
   public:
 	Scheduler();		// Initialize list of ready threads 
+	Scheduler(SchedulerType type);
 	~Scheduler();				// De-allocate ready list
 
 	void ReadyToRun(Thread* thread);	
@@ -47,6 +49,12 @@ class Scheduler {
 	bool WakeUp();	// Check if thread can be ReadyToRun
 	void PopBlock(Thread*thread){blockList->remove(thread);}
 	bool IsBlockEmpty(){return blockList->empty();}
+    	
+    	void setSchedulerType(SchedulerType t) {schedulerType = t;}
+	SchedulerType getSchedulerType() {return schedulerType;}
+
+    // SelfTest for scheduler is implemented in class Thread
+    
   private:
 	SchedulerType schedulerType;
 	List<Thread *> *readyList;	// queue of threads that are ready to run,

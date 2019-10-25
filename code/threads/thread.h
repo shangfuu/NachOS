@@ -111,6 +111,14 @@ class Thread {
 	/* Written by @shungfu */
 	void SetSleepTime(int time);
 	int getSleepTime(){return sleep_time;}	
+    void setBurstTime(int t)	{burstTime = t;}
+    int getBurstTime()		{return burstTime;}
+    void setPriority(int t)	{priority = t;}
+    int getPriority()		{return priority;}
+    char* getName() { return (name); }
+    void Print() { cout << name; }
+    void SelfTest();		// test whether thread impl is working
+
   private:
     // some of the private data for this class is listed above
     
@@ -119,13 +127,13 @@ class Thread {
 				// (If NULL, don't deallocate stack)
     ThreadStatus status;	// ready, running or blocked
     char* name;
-	
+    int sleep_time;
+    int burstTime;
+    int priority;	
     void StackAllocate(VoidFunctionPtr func, void *arg);
     				// Allocate a stack for thread.
 				// Used internally by Fork()
-	
-	/* Writen by @shungfu */
-	int sleep_time;
+
 #ifdef USER_PROGRAM
 // A thread running a user program actually has *two* sets of CPU registers -- 
 // one for its state while executing user code, one for its state 
