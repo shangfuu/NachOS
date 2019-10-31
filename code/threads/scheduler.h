@@ -50,7 +50,7 @@ class Scheduler {
 	void PopBlock(Thread*thread){blockList->remove(thread);}
 	bool IsBlockEmpty(){return blockList->empty();}
     	
-    	void setSchedulerType(SchedulerType t) {schedulerType = t;}
+    void setSchedulerType(SchedulerType t) {schedulerType = t;}
 	SchedulerType getSchedulerType() {return schedulerType;}
 
     // SelfTest for scheduler is implemented in class Thread

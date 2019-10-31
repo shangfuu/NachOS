@@ -41,8 +41,8 @@ int PriorityCompare(Thread *a, Thread *b) {
 Scheduler::Scheduler()
 {
 //	schedulerType = type;
-	readyList = new List<Thread *>; 
-	toBeDestroyed = NULL;
+//	readyList = new List<Thread *>; 
+//	toBeDestroyed = NULL;
 	/* Writen by @shungfu */
 	blockList = new std::list<Thread*>;
 	Scheduler(RR);
