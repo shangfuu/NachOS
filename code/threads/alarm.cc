@@ -61,7 +61,7 @@ Alarm::CallBack()
 	}
 
     /* Added at HW2 */
-    kernel->currentThread->setPriority(kernel->currentThread->getPriotity() - 1)
+    kernel->currentThread->setPriority(kernel->currentThread->getPriority() - 1);
 
 	// Check also Block status, and if someone wakeup do context switch
     if (status == IdleMode && kernel->scheduler->IsBlockEmpty() && !WakeUp) {	// is it time to quit?

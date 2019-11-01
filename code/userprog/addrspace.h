@@ -36,8 +36,8 @@ class AddrSpace {
 
   private:
 // @shungfu : Edit at Hw2
-    static bool *physPageTable = new bool[NumPhysPages](NOT_USED);    // Used to record the physical page that have been used, default not used.
-    static int numFreePhyPages = NumPhysPages;     // Number of physical pages can be used
+    static bool physPageTable[NumPhysPages];    // Used to record the physical page that have been used, default not used.
+    static int numFreePhyPages;     // Number of physical pages can be used
 
     TranslationEntry *pageTable;	// Assume linear page table translation
 					// for now!

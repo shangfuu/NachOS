@@ -21,6 +21,11 @@
 #include "machine.h"
 #include "noff.h"
 
+// @shungfu : Edit at HW2
+// Can't initial at .h
+int AddrSpace::numFreePhyPages = NumPhysPages;
+bool AddrSpace::physPageTable[NumPhysPages] = {NOT_USED};
+
 //----------------------------------------------------------------------
 // SwapHeader
 // 	Do little endian to big endian conversion on the bytes in the 
@@ -92,7 +97,7 @@ AddrSpace::~AddrSpace()
 {
 // @shungfu : Edit at Hw2
     // Free physPageTable we have used, just turn the state to NOT_USED.
-    for(unsigned int i = 0; i < numPages; i++){
+    for(int i = 0; i < numPages; i++){
         physPageTable[pageTable[i].physicalPage] = NOT_USED;
         numFreePhyPages++;
     }
@@ -140,31 +145,33 @@ AddrSpace::Load(char *fileName)
     size = numPages * PageSize;
 
 // @shungfu : Edit at Hw2
-    ASSERT(numPages <= numFreePhyPages);  // check we're not trying
+    ASSERT(numPages <= NumPhysPages);  // check we're not trying
 						              // to run anything bigger
                                       // than number of  physical pages
                                       // left in physicalPageTable
+    DEBUG(dbgAddr, "Used " << numPages << "Pages")
 
 //@shungfu : Edit at Hw2
     // Deploy the virtual and physical page tables.
+    pageTable = new TranslationEntry[numPages];
     for(unsigned int i = 0; i < numPages; i++){
     	// Deploy on only available index
         int j = i;
         while(j < NumPhysPages && physPageTable[j] == USED){
             j++;
         }
+        
         physPageTable[j] = USED;
         pageTable[i].physicalPage = j;
         numFreePhyPages--;
-        // Same as origin
+        // Same as original
         pageTable[i].virtualPage = i;
 	    pageTable[i].valid = TRUE;
     	pageTable[i].use = FALSE;
     	pageTable[i].dirty = FALSE;
-        pageTable[i].readOnly = FALSE;  
+        pageTable[i].readOnly = FALSE; 
     } 
 
-   
     DEBUG(dbgAddr, "Initializing address space: " << numPages << ", " << size);
 
 /*    Google on internet: 
@@ -181,7 +188,7 @@ mainMemory[]: page base + page offset
 	    DEBUG(dbgAddr, noffH.code.virtualAddr << ", " << noffH.code.size);
 // @shungfu : Edit at Hw2
         executable->ReadAt(
-		&(kernel->machine->mainMemory[pageTable[noffH.code.virtualAddr/PageSize].physicalPage * PageSize + (noff.code.virtualAddr % PageSize)]), 
+		&(kernel->machine->mainMemory[pageTable[noffH.code.virtualAddr/PageSize].physicalPage * PageSize + (noffH.code.virtualAddr % PageSize)]), 
 		  noffH.code.size, noffH.code.inFileAddr
          );
     }
@@ -190,7 +197,7 @@ mainMemory[]: page base + page offset
 	    DEBUG(dbgAddr, noffH.initData.virtualAddr << ", " << noffH.initData.size);
 // @shungfu : Edit at Hw2
         executable->ReadAt(
-		&(kernel->machine->mainMemory[pageTable[noffH.initData.virtualAddr/PageSize].physicalPage * PageSize + (noff.initData.virtualAddr % PageSize)]),
+		&(kernel->machine->mainMemory[pageTable[noffH.initData.virtualAddr/PageSize].physicalPage * PageSize + (noffH.initData.virtualAddr % PageSize)]),
 		  noffH.initData.size, noffH.initData.inFileAddr
          );
     }

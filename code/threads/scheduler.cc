@@ -43,12 +43,14 @@ Scheduler::Scheduler()
 //	readyList = new List<Thread *>; 
 
 	/* Writen by @shungfu */
-	blockList = new std::list<Thread*>;
+    DEBUG(dbgView, "Scheduler::Scheduler");
 	Scheduler(RR);
 }
 
 Scheduler::Scheduler(SchedulerType type)
 {
+    DEBUG(dbgView, "Scheduler::Scheduler(Type)");
+	blockList = new std::list<Thread*>;
 	schedulerType = type;
 	switch(schedulerType) {
     	case RR:

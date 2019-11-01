@@ -178,7 +178,6 @@ Thread::Finish ()
 {
     (void) kernel->interrupt->SetLevel(IntOff);		
     ASSERT(this == kernel->currentThread);
-    
     DEBUG(dbgThread, "Finishing thread: " << name);
     
     Sleep(TRUE);				// invokes SWITCH
@@ -456,3 +455,11 @@ Thread::SelfTest()
     kernel->currentThread->Yield();
 }
 
+
+/* Writen by @shungfu */
+void
+Thread::SetSleepTime(int time)
+{   
+    sleep_time = kernel->stats->totalTicks + time;
+    cout << "Total Ticks: " << kernel->stats->totalTicks << ", sleep until: " << sleep_time << endl;
+}
