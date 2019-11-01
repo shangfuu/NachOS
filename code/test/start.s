@@ -42,6 +42,24 @@ __start:
  * -------------------------------------------------------------
  */
 
+    // Practice
+    .globl Example
+    .ent Example
+Example:
+    addiu   $2,$0,SC_Example
+    syscall
+    j   $31
+    .end Example
+
+    // Sleep
+    .globl Sleep   
+    .ent Sleep
+Sleep:
+    addiu $2,$0,SC_Sleep
+    syscall
+    j   $31
+    .end Sleep
+
 	.globl Halt
 	.ent	Halt
 Halt:
