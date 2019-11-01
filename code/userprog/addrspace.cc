@@ -53,18 +53,32 @@ SwapHeader (NoffHeader *noffH)
 
 AddrSpace::AddrSpace()
 {
-    pageTable = new TranslationEntry[NumPhysPages];
-    for (unsigned int i = 0; i < NumPhysPages; i++) {
-	pageTable[i].virtualPage = i;	// for now, virt page # = phys page #
-	pageTable[i].physicalPage = i;
-//	pageTable[i].physicalPage = 0;
-	pageTable[i].valid = TRUE;
-//	pageTable[i].valid = FALSE;
-	pageTable[i].use = FALSE;
-	pageTable[i].dirty = FALSE;
-	pageTable[i].readOnly = FALSE;  
+//  @shungfu : Edit at Hw2
+//-----------------------------------------------------
+//  When Multiprocess we should just new the size we need.
+//  The Origianl Code just dealing with the situation
+//  when there is only one process is carry out.
+//  When doing Mulitprocess, there's a static physical page table.
+//  And all the virtual page table in defferent AddrSpace
+//  will go and connect physical page table if there is 
+//  empty pages enough to fill in all numPages in virtual.
+//  So the deploy things we got to do, i put it in ::Load() func.
+//-----------------------------------------------------
+
+//  pageTable = new TranslationEntry[NumPhysPages];
+//  PhysicalPage conflict so deploy at ::Load() function 
+/*  for (unsigned int i = 0; i < NumPhysPages; i++) {
+    	pageTable[i].virtualPage = i;	// for now, virt page # = phys page #
+    	pageTable[i].physicalPage = i;
+    //	PageTable[i].physicalPage = 0;
+    	pageTable[i].valid = TRUE;
+    //	pageTable[i].valid = FALSE;
+    	pageTable[i].use = FALSE;
+    	pageTable[i].dirty = FALSE;
+    	pageTable[i].readOnly = FALSE;  
     }
-    
+ */
+   
     // zero out the entire address space
 //    bzero(kernel->machine->mainMemory, MemorySize);
 }
@@ -76,7 +90,13 @@ AddrSpace::AddrSpace()
 
 AddrSpace::~AddrSpace()
 {
-   delete pageTable;
+// @shungfu : Edit at Hw2
+    // Free physPageTable we have used, just turn the state to NOT_USED.
+    for(unsigned int i = 0; i < numPages; i++){
+        physPageTable[pageTable[i].physicalPage] = NOT_USED;
+        numFreePhyPages++;
+    }
+    delete pageTable;
 }
 
 
@@ -88,6 +108,7 @@ AddrSpace::~AddrSpace()
 //	the object code file is in NOFF format.
 //
 //	"fileName" is the file containing the object code to load into memory
+//  @shungfu : Edit at HW2  -> To Solve the Multiprogram memory conflict.
 //----------------------------------------------------------------------
 
 bool 
@@ -101,41 +122,77 @@ AddrSpace::Load(char *fileName)
 	cerr << "Unable to open file " << fileName << "\n";
 	return FALSE;
     }
+    
     executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) && 
-		(WordToHost(noffH.noffMagic) == NOFFMAGIC))
+        (WordToHost(noffH.noffMagic) == NOFFMAGIC)) {
     	SwapHeader(&noffH);
+    }
+
     ASSERT(noffH.noffMagic == NOFFMAGIC);
 
 // how big is address space?
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size 
 			+ UserStackSize;	// we need to increase the size
 						// to leave room for the stack
-    numPages = divRoundUp(size, PageSize);
+    numPages = divRoundUp(size, PageSize); // Number of pages used in this addr
 //	cout << "number of pages of " << fileName<< " is "<<numPages<<endl;
     size = numPages * PageSize;
 
-    ASSERT(numPages <= NumPhysPages);		// check we're not trying
-						// to run anything too big --
-						// at least until we have
-						// virtual memory
+// @shungfu : Edit at Hw2
+    ASSERT(numPages <= numFreePhyPages);  // check we're not trying
+						              // to run anything bigger
+                                      // than number of  physical pages
+                                      // left in physicalPageTable
 
+//@shungfu : Edit at Hw2
+    // Deploy the virtual and physical page tables.
+    for(unsigned int i = 0; i < numPages; i++){
+    	// Deploy on only available index
+        int j = i;
+        while(j < NumPhysPages && physPageTable[j] == USED){
+            j++;
+        }
+        physPageTable[j] = USED;
+        pageTable[i].physicalPage = j;
+        numFreePhyPages--;
+        // Same as origin
+        pageTable[i].virtualPage = i;
+	    pageTable[i].valid = TRUE;
+    	pageTable[i].use = FALSE;
+    	pageTable[i].dirty = FALSE;
+        pageTable[i].readOnly = FALSE;  
+    } 
+
+   
     DEBUG(dbgAddr, "Initializing address space: " << numPages << ", " << size);
+
+/*    Google on internet: 
+mainMemory[pageTable[noffH.code.virtualAddr/PageSize].physicalPage * PageSize + (noffH.code.virtualAddr%PageSize)]
+
+page base: which page * PageSize.
+page offset:  code.address mod PageSize。
+mainMemory[]: page base + page offset
+*/
 
 // then, copy in the code and data segments into memory
 	if (noffH.code.size > 0) {
         DEBUG(dbgAddr, "Initializing code segment.");
-	DEBUG(dbgAddr, noffH.code.virtualAddr << ", " << noffH.code.size);
-        	executable->ReadAt(
-		&(kernel->machine->mainMemory[noffH.code.virtualAddr]), 
-			noffH.code.size, noffH.code.inFileAddr);
+	    DEBUG(dbgAddr, noffH.code.virtualAddr << ", " << noffH.code.size);
+// @shungfu : Edit at Hw2
+        executable->ReadAt(
+		&(kernel->machine->mainMemory[pageTable[noffH.code.virtualAddr/PageSize].physicalPage * PageSize + (noff.code.virtualAddr % PageSize)]), 
+		  noffH.code.size, noffH.code.inFileAddr
+         );
     }
 	if (noffH.initData.size > 0) {
         DEBUG(dbgAddr, "Initializing data segment.");
-	DEBUG(dbgAddr, noffH.initData.virtualAddr << ", " << noffH.initData.size);
+	    DEBUG(dbgAddr, noffH.initData.virtualAddr << ", " << noffH.initData.size);
+// @shungfu : Edit at Hw2
         executable->ReadAt(
-		&(kernel->machine->mainMemory[noffH.initData.virtualAddr]),
-			noffH.initData.size, noffH.initData.inFileAddr);
+		&(kernel->machine->mainMemory[pageTable[noffH.initData.virtualAddr/PageSize].physicalPage * PageSize + (noff.initData.virtualAddr % PageSize)]),
+		  noffH.initData.size, noffH.initData.inFileAddr
+         );
     }
 
     delete executable;			// close file

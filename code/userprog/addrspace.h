@@ -19,6 +19,10 @@
 
 #define UserStackSize		1024 	// increase this as necessary!
 
+// @shungfu: Edit at HW2
+#define NOT_USED false
+#define USED true
+
 class AddrSpace {
   public:
     AddrSpace();			// Create an address space.
@@ -31,6 +35,10 @@ class AddrSpace {
     void RestoreState();		// info on a context switch 
 
   private:
+// @shungfu : Edit at Hw2
+    static bool *physPageTable = new bool[NumPhysPages](NOT_USED);    // Used to record the physical page that have been used, default not used.
+    static int numFreePhyPages = NumPhysPages;     // Number of physical pages can be used
+
     TranslationEntry *pageTable;	// Assume linear page table translation
 					// for now!
     unsigned int numPages;		// Number of pages in the virtual 
