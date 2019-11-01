@@ -40,9 +40,8 @@ int PriorityCompare(Thread *a, Thread *b) {
 
 Scheduler::Scheduler()
 {
-//	schedulerType = type;
 //	readyList = new List<Thread *>; 
-//	toBeDestroyed = NULL;
+
 	/* Writen by @shungfu */
 	blockList = new std::list<Thread*>;
 	Scheduler(RR);
@@ -59,11 +58,11 @@ Scheduler::Scheduler(SchedulerType type)
 		/* todo */
         	break;
     	case Priority:
-		readyList = new SortedList<Thread *>(PriorityCompare);
+    		readyList = new SortedList<Thread *>(PriorityCompare);
         	break;
     	case FIFO:
 		/* todo */
-		break;
+	    	break;
    	}
 	toBeDestroyed = NULL;
 } 

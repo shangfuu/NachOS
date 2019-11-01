@@ -23,7 +23,7 @@ enum SchedulerType {
         RR,     // Round Robin
         SJF,
         Priority,
-	FIFO
+    	FIFO
 };
 
 class Scheduler {
@@ -50,6 +50,7 @@ class Scheduler {
 	void PopBlock(Thread*thread){blockList->remove(thread);}
 	bool IsBlockEmpty(){return blockList->empty();}
     	
+    /* Added at HW2 */
     void setSchedulerType(SchedulerType t) {schedulerType = t;}
 	SchedulerType getSchedulerType() {return schedulerType;}
 

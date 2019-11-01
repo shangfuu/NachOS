@@ -60,14 +60,20 @@ Alarm::CallBack()
 		WakeUp = true;
 	}
 
+    /* Added at HW2 */
+    kernel->currentThread->setPriority(kernel->currentThread->getPriotity() - 1)
+
 	// Check also Block status, and if someone wakeup do context switch
     if (status == IdleMode && kernel->scheduler->IsBlockEmpty() && !WakeUp) {	// is it time to quit?
         if (!interrupt->AnyFutureInterrupts()) {
 	    timer->Disable();	// turn off the timer
 	}
     } else {			// there's someone to preempt
- 	interrupt->YieldOnReturn();
-//	cout << "Total Ticks: " << kernel->stats->totalTicks << endl;
+        /* Added at HW2 */
+        if(kernel->scheduler->getSchedulerType() == RR ||
+            kernel->scheduler->getSchedulerType() == Priority){
+     	     interrupt->YieldOnReturn();
+       }
     }
 }
 

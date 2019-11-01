@@ -131,7 +131,7 @@ class Thread {
     char* name;
     int sleep_time;
    
-    int burstTime;
+    int burstTime;  // Time required by a precess for CPU execution
     int priority;	
    
     void StackAllocate(VoidFunctionPtr func, void *arg);
