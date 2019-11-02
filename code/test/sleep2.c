@@ -2,7 +2,7 @@
 main()
 {
 	int i;
-	for(i = 0; i < 20; i++)
+	for(i = 0; i < 6; i++)
 	{
 		Sleep(100000);
 		PrintInt(10);

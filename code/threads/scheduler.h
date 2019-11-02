@@ -42,9 +42,7 @@ class Scheduler {
     					// running needs to be deleted
 	void Print();			// Print contents of ready list
     
-    // SelfTest for scheduler is implemented in class Thread
-    
-	/* Writen bu @shungfu */
+	/* @shungfu : Hw1 */
 	void Blocked(Thread * thread);	// Thread are being Blocked
 	bool WakeUp();	// Check if thread can be ReadyToRun
 	void PopBlock(Thread*thread){blockList->remove(thread);}

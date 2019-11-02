@@ -42,14 +42,14 @@ Scheduler::Scheduler()
 {
 //	readyList = new List<Thread *>; 
 
-	/* Writen by @shungfu */
+	// 你不call 你要先講
     DEBUG(dbgView, "Scheduler::Scheduler");
 	Scheduler(RR);
 }
 
 Scheduler::Scheduler(SchedulerType type)
 {
-    DEBUG(dbgView, "Scheduler::Scheduler(Type)");
+    DEBUG(dbgView, "Scheduler::Scheduler(" << type << ")");
 	blockList = new std::list<Thread*>;
 	schedulerType = type;
 	switch(schedulerType) {
@@ -63,7 +63,8 @@ Scheduler::Scheduler(SchedulerType type)
     		readyList = new SortedList<Thread *>(PriorityCompare);
         	break;
     	case FIFO:
-		/* todo */
+            /* todo */
+		    readyList = new List<Thread *>;
 	    	break;
    	}
 	toBeDestroyed = NULL;
