@@ -28,6 +28,7 @@ UserProgKernel::UserProgKernel(int argc, char **argv)
     	}
     	else if (strcmp(argv[i], "-e") == 0) {
     		execfile[++execfileNum]= argv[++i];
+            prio[execfileNum] = 0;
     	}
         else if (strcmp(argv[i], "-u") == 0) {
     		cout << "===========The following argument is defined in userkernel.cc" << endl;

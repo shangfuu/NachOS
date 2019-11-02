@@ -139,7 +139,6 @@ void
 Scheduler::Run (Thread *nextThread, bool finishing)
 {
     Thread *oldThread = kernel->currentThread;
-    DEBUG(dbgView, oldThread->getName() << " Get Priority: " << oldThread->getPriority());
     DEBUG(dbgView, nextThread->getName() << " Get Priority: " << nextThread->getPriority());
 
  
