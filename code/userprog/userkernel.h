@@ -42,6 +42,8 @@ class UserProgKernel : public ThreadedKernel {
 	Thread* t[10];
 	char*	execfile[10];
 	int	execfileNum;
+    // @shungfu : Edit HW2
+    int prio[10];   // priority of thread
 };
 
 #endif //USERKERNEL_H

@@ -1931,7 +1931,8 @@ userkernel.o: ../userprog/userkernel.cc /usr/include/stdc-predef.h \
  /usr/include/c++/4.8/bits/stl_list.h /usr/include/c++/4.8/bits/list.tcc \
  ../machine/interrupt.h ../machine/stats.h ../threads/alarm.h \
  ../machine/timer.h ../filesys/synchdisk.h ../machine/disk.h \
- ../userprog/userkernel.h
+ ../userprog/userkernel.h /usr/include/c++/4.8/sstream \
+ /usr/include/c++/4.8/bits/sstream.tcc
 console.o: ../machine/console.cc /usr/include/stdc-predef.h \
  ../lib/copyright.h ../machine/console.h ../lib/utility.h \
  ../lib/copyright.h ../machine/callback.h ../threads/main.h \

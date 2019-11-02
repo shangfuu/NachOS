@@ -10,7 +10,7 @@
 #include "synchconsole.h"
 #include "userkernel.h"
 #include "synchdisk.h"
-
+#include <sstream>
 //----------------------------------------------------------------------
 // UserProgKernel::UserProgKernel
 // 	Interpret command line arguments in order to determine flags 
@@ -43,6 +43,15 @@ UserProgKernel::UserProgKernel(int argc, char **argv)
     		cout << "	./nachos -s : Print machine status during the machine is on." << endl;
     		cout << "	./nachos -e file1 -e file2 : executing file1 and file2."  << endl;
     	}
+        else if (strcmp(argv[i], "-prio") == 0) {    // @shungfu : Edit HW2 priority schedule
+           ASSERT(execfileNum > 0 );
+           
+           stringstream ss(argv[i+1]);
+           int p = 0;
+           ss >> p;
+           prio[execfileNum] = p;
+        }
+
     }
 }
 
@@ -96,6 +105,8 @@ UserProgKernel::Run()
 	for (int n=1;n<=execfileNum;n++)
 	{
 		t[n] = new Thread(execfile[n]);
+        DEBUG(dbgView, "UserProgKernel::Run(): " << n << " " << t[n]->getName() << " " << prio[n]);
+        t[n]->setPriority(prio[n]);
 		t[n]->space = new AddrSpace();
 		t[n]->Fork((VoidFunctionPtr) &ForkExecute, (void *)t[n]);
 		cout << "Thread " << execfile[n] << " is executing." << endl;
