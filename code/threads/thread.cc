@@ -244,19 +244,13 @@ void
 Thread::Sleep (bool finishing)
 {
     Thread *nextThread;
-	
-//	kernel->scheduler->Print();
 	    
     ASSERT(this == kernel->currentThread);
     ASSERT(kernel->interrupt->getLevel() == IntOff);
     
     DEBUG(dbgThread, "Sleeping thread: " << name);
-    status = BLOCKED;
 
-	if(!finishing){
-		kernel->scheduler->Blocked(this);
-	}
-	
+    status = BLOCKED;
     while ((nextThread = kernel->scheduler->FindNextToRun()) == NULL){
 	kernel->interrupt->Idle();	// no one to run, wait for an interrupt
 	}

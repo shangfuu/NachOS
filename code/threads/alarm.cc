@@ -94,7 +94,7 @@ Alarm::WaitUntil(int x)
 	thread->SetSleepTime(x);
 	
 	// Make the thread Sleep
-//	cout << "Thread goes Sleep" << endl;
+    kernel->scheduler->Blocked(thread);
 	thread->Sleep(false);
 
 	// turn on the interrupt
