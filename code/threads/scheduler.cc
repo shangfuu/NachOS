@@ -66,6 +66,9 @@ Scheduler::Scheduler(SchedulerType type)
             /* todo */
 		    readyList = new List<Thread *>;
 	    	break;
+        case Priority_pt:
+            readyList = new SortedList<Thread *>(PriorityCompare);
+            break;
    	}
 	toBeDestroyed = NULL;
 } 

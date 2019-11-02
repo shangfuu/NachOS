@@ -70,8 +70,8 @@ Alarm::CallBack()
 	}
     } else {			// there's someone to preempt
         /* Added at HW2 */
-        if(kernel->scheduler->getSchedulerType() == RR){// ||
-        //    kernel->scheduler->getSchedulerType() == Priority){
+        if(kernel->scheduler->getSchedulerType() == RR ||
+            kernel->scheduler->getSchedulerType() == Priority_pt){
      	     interrupt->YieldOnReturn();
        }
     }
