@@ -24,6 +24,7 @@ enum SchedulerType {
         SJF,
         Priority,
     	FIFO,
+        SRTF,
         Priority_pt,
 };
 

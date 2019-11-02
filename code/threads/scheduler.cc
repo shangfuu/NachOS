@@ -59,6 +59,9 @@ Scheduler::Scheduler(SchedulerType type)
     	case SJF:
 		/* todo */
         	break;
+        case SRTF:
+        /* todo */
+            break;
     	case Priority:
     		readyList = new SortedList<Thread *>(PriorityCompare);
         	break;
