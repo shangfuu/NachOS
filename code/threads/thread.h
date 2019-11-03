@@ -117,6 +117,8 @@ class Thread {
     int getBurstTime() {return burstTime;}
     void setPriority(int t)	{priority = t;}
     int getPriority() {return priority;}
+    int getArrivalTime() {return arrivalTime;}
+    void setArrivalTime(int t) {arrivalTime = t;}
   private:
     // some of the private data for this class is listed above
     
@@ -129,7 +131,8 @@ class Thread {
    
     int burstTime;  // Time required by a precess for CPU execution
     int priority;	
-   
+    int arrivalTime;
+     
     void StackAllocate(VoidFunctionPtr func, void *arg);
     				// Allocate a stack for thread.
 				// Used internally by Fork()

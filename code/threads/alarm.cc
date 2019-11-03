@@ -52,7 +52,6 @@ Alarm::CallBack()
     Interrupt *interrupt = kernel->interrupt;
     MachineStatus status = interrupt->getStatus();	
 	
-	Thread *thread;
 	bool WakeUp = false;
 
     // if someone to wakeup, then put it back to ready list,and pop
@@ -61,7 +60,7 @@ Alarm::CallBack()
 	}
 
     /* Added at HW2 */
-    // kernel->currentThread->setPriority(kernel->currentThread->getPriority() - 1);
+//    kernel->currentThread->setPriority(kernel->currentThread->getPriority() - 1);
 
 	// Check also Block status, and if someone wakeup do context switch
     if (status == IdleMode && kernel->scheduler->IsBlockEmpty() && !WakeUp) {	// is it time to quit?
@@ -70,10 +69,31 @@ Alarm::CallBack()
 	}
     } else {			// there's someone to preempt
         /* Added at HW2 */
-        if(kernel->scheduler->getSchedulerType() == RR ||
-            kernel->scheduler->getSchedulerType() == Priority_pt){
-     	     interrupt->YieldOnReturn();
-       }
+        if(kernel->scheduler->getSchedulerType() == RR) { // RR than preempt
+            interrupt->YieldOnReturn();
+        }
+        else if(kernel->scheduler->getSchedulerType() == Priority_pt) { // Priority check if running thread need to be preempt
+             
+            Scheduler *scheduler = kernel->scheduler;
+            Thread *thread = scheduler->FindNextToRun();
+            if(thread != NULL){
+                if(kernel->currentThread->getPriority() > thread->getPriority()){
+                    interrupt->YieldOnReturn();
+                }
+                scheduler->ReadyToRun(thread);
+            }
+        }
+        else if(kernel->scheduler->getSchedulerType() == SRTF){ //SRTF check if running thread need to be preempt
+            
+            Scheduler *scheduler = kernel->scheduler;
+            Thread *thread = scheduler->FindNextToRun();
+            if(thread != NULL) {
+                if(kernel->currentThread->getBurstTime() > thread->getBurstTime()) {
+                    interrupt->YieldOnReturn();
+                }
+                scheduler->ReadyToRun(thread);
+            }
+        }
     }
 }
 

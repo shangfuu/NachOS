@@ -32,6 +32,13 @@ int PriorityCompare(Thread *a, Thread *b) {
     return a->getPriority() > b->getPriority() ? 1 : -1;
 }
 
+int BurstTimeCompare(Thread *a, Thread *b){
+    if(a->getBurstTime() == b->getBurstTime())
+        return 0;
+    return a->getBurstTime() > b->getBurstTime() ? 1 : -1;
+}   
+
+
 //----------------------------------------------------------------------
 // Scheduler::Scheduler
 // 	Initialize the list of ready but not running threads.
@@ -58,9 +65,11 @@ Scheduler::Scheduler(SchedulerType type)
         	break;
     	case SJF:
 		/* todo */
+            readyList = new SortedList<Thread *>(BurstTimeCompare);
         	break;
         case SRTF:
         /* todo */
+            readyList = new SortedList<Thread *>(BurstTimeCompare);
             break;
     	case Priority:
     		readyList = new SortedList<Thread *>(PriorityCompare);
@@ -145,7 +154,8 @@ void
 Scheduler::Run (Thread *nextThread, bool finishing)
 {
     Thread *oldThread = kernel->currentThread;
-    DEBUG(dbgView, nextThread->getName() << " Get Priority: " << nextThread->getPriority());
+    DEBUG(dbgView, nextThread->getName() << " Get Priorty: " << nextThread->getPriority());
+    DEBUG(dbgView, nextThread->getName() << " Get Burst Time: " << nextThread->getBurstTime());
 
  
 //	cout << "Current Thread" <<oldThread->getName() << "    Next Thread"<<nextThread->getName()<<endl;
