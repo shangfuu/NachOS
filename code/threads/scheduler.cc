@@ -38,9 +38,9 @@ int BurstTimeCompare(Thread *a, Thread *b){
     return a->getBurstTime() > b->getBurstTime() ? 1 : -1;
 }
 
+// Comapre arrival time first, than comapre burst time
 int ArrivalTimeCompare(Thread *a, Thread *b){
     if(a->getArrivalTime() == b->getArrivalTime()){
-   //     cout << a->getName() << " " << b->getName() << endl;
         return BurstTimeCompare(a,b);
     }
     return a->getArrivalTime() > b->getArrivalTime()? 1 : -1;
@@ -57,7 +57,6 @@ Scheduler::Scheduler()
 {
 //	readyList = new List<Thread *>; 
 
-	// 你不call 你要先講
     DEBUG(dbgView, "Scheduler::Scheduler");
 	Scheduler(RR);
 }
@@ -137,6 +136,7 @@ Scheduler::FindNextToRun ()
     if (readyList->IsEmpty()) {
 	return NULL;
     } else {
+        // STRF and SRF do GetNextToRun
         if(kernel->scheduler->getSchedulerType() == SRTF ||
             kernel->scheduler->getSchedulerType() == SJF)
             return GetNextToRun();
@@ -147,7 +147,8 @@ Scheduler::FindNextToRun ()
 //----------------------------------------------------------------------
 // Scheduler::GetNextToRun
 // 	Return the next thread to be scheduled onto the CPU.
-//	If there are no ready threads, return NULL.
+//	If there are no arrive threads, return the thread will arrive first, 
+//  and advance the time to the time first thread arrive.
 // Side effect:
 //	Thread is removed from the ready list.
 //----------------------------------------------------------------------
