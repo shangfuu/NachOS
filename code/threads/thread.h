@@ -112,6 +112,8 @@ class Thread {
 	/* Written by @shungfu */
 	void SetSleepTime(int time);
     int getSleepTime(){return sleep_time;}	
+    static int currentTime; // used in SRTF
+
     /* ---------*/
     void setBurstTime(int t) {burstTime = t;}
     int getBurstTime() {return burstTime;}
@@ -132,7 +134,7 @@ class Thread {
     int burstTime;  // Time required by a precess for CPU execution
     int priority;	
     int arrivalTime;
-     
+             
     void StackAllocate(VoidFunctionPtr func, void *arg);
     				// Allocate a stack for thread.
 				// Used internally by Fork()

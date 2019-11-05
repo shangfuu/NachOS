@@ -53,7 +53,8 @@ class Scheduler {
     /* Added at HW2 */
     void setSchedulerType(SchedulerType t) {schedulerType = t;}
 	SchedulerType getSchedulerType() {return schedulerType;}
-
+    Thread* GetNextToRun(); // SRTF version of FindNextToRun()
+    bool NoNextToRun() {return readyList->IsEmpty() ? 1 : 0;} //
     // SelfTest for scheduler is implemented in class Thread
     
   private:

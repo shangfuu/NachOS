@@ -36,7 +36,15 @@ int BurstTimeCompare(Thread *a, Thread *b){
     if(a->getBurstTime() == b->getBurstTime())
         return 0;
     return a->getBurstTime() > b->getBurstTime() ? 1 : -1;
-}   
+}
+
+int ArrivalTimeCompare(Thread *a, Thread *b){
+    if(a->getArrivalTime() == b->getArrivalTime()){
+   //     cout << a->getName() << " " << b->getName() << endl;
+        return BurstTimeCompare(a,b);
+    }
+    return a->getArrivalTime() > b->getArrivalTime()? 1 : -1;
+}
 
 
 //----------------------------------------------------------------------
@@ -69,7 +77,7 @@ Scheduler::Scheduler(SchedulerType type)
         	break;
         case SRTF:
         /* todo */
-            readyList = new SortedList<Thread *>(BurstTimeCompare);
+            readyList = new SortedList<Thread *>(ArrivalTimeCompare);
             break;
     	case Priority:
     		readyList = new SortedList<Thread *>(PriorityCompare);
@@ -125,12 +133,54 @@ Thread *
 Scheduler::FindNextToRun ()
 {
     ASSERT(kernel->interrupt->getLevel() == IntOff);
-
+   
     if (readyList->IsEmpty()) {
 	return NULL;
     } else {
+        if(kernel->scheduler->getSchedulerType() == SRTF)
+            return GetNextToRun();
     	return readyList->RemoveFront();
     }
+}
+
+//----------------------------------------------------------------------
+// Scheduler::GetNextToRun
+// 	Return the next thread to be scheduled onto the CPU.
+//	If there are no ready threads, return NULL.
+// Side effect:
+//	Thread is removed from the ready list.
+//----------------------------------------------------------------------
+
+Thread *
+Scheduler::GetNextToRun()
+{
+    ASSERT(kernel->interrupt->getLevel() == IntOff);
+    ListIterator<Thread *> *iter = new ListIterator<Thread *>(readyList);
+    
+    Thread *firstThread = iter->Item();
+
+    // Run the ReadyList
+    while(iter->Item()->getArrivalTime() < Thread::currentTime){
+        
+        iter->Next();
+        if(iter->IsDone()) break;
+        
+        if(iter->Item()->getBurstTime() < kernel->currentThread->getBurstTime()){
+            firstThread = iter->Item();
+        }
+    }
+    // I got something
+    if(!iter->IsDone()){
+    //    readyList->Remove(firstThread);
+    //    return firstThread;
+    } else{ // Get a Null
+        // Advance time
+        Thread::currentTime = firstThread->getArrivalTime();
+    //   readyList->Remove(firstThread);
+    //    return firstThread;
+    }
+    readyList->Remove(firstThread);
+    return firstThread;
 }
 
 //----------------------------------------------------------------------

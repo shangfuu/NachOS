@@ -25,6 +25,9 @@
 // this is put at the top of the execution stack, for detecting stack overflows
 const int STACK_FENCEPOST = 0xdedbeef;
 
+// Initial static member
+int Thread::currentTime = 0;
+
 //----------------------------------------------------------------------
 // Thread::Thread
 // 	Initialize a thread control block, so that we can then call
@@ -212,10 +215,12 @@ Thread::Yield ()
     
     DEBUG(dbgThread, "Yielding thread: " << name);
     
-    nextThread = kernel->scheduler->FindNextToRun();
-    if (nextThread != NULL) {
-	kernel->scheduler->ReadyToRun(this);
-	kernel->scheduler->Run(nextThread, FALSE);
+    // If ready list is not empty. @shungfu: Edit at HW2
+    if(!kernel->scheduler->NoNextToRun())
+    {
+        kernel->scheduler->ReadyToRun(this);    // put the running into the ready list and it will auto compare
+        nextThread = kernel->scheduler->FindNextToRun(); // find next
+        kernel->scheduler->Run(nextThread, FALSE); // and run
     }
     (void) kernel->interrupt->SetLevel(oldLevel);
 }
@@ -417,9 +422,11 @@ SimpleThread()
     Thread *thread = kernel->currentThread;
     while (thread->getBurstTime() > 0) {
         thread->setBurstTime(thread->getBurstTime() - 1);
-	printf("%s: %d\n", kernel->currentThread->getName(), kernel->currentThread->getBurstTime());
+        Thread::currentTime++;  // burst
+
+    	printf("%s: %d\n", kernel->currentThread->getName(), kernel->currentThread->getBurstTime());
         //kernel->currentThread->Yield();
-	kernel->interrupt->OneTick();
+	    kernel->interrupt->OneTick();
     }    
 }
 
@@ -434,19 +441,23 @@ Thread::SelfTest()
 {
     DEBUG(dbgThread, "Entering Thread::SelfTest");
     
-    const int number 	 = 3;
-    char *name[number] 	 = {"A", "B", "C"};
-    int burst[number] 	 = {3, 10, 4};
-    int priority[number] = {4, 5, 3};
+    const int number 	 = 5;
+    char *name[number] 	 = {"A", "B", "C", "D", "E"};
+    int burst[number] 	 = {1, 2, 3, 2, 1};
+    int priority[number] = {4, 5, 3, 1, 2};
+    int arrival[number] = {1, 1, 2, 3, 4};
 
     Thread *t;
-    for (int i = 0; i < number; i ++) {
+    for (int i = 0; i < number; i++) {
         t = new Thread(name[i]);
         t->setPriority(priority[i]);
         t->setBurstTime(burst[i]);
+        t->setArrivalTime(arrival[i]);
         t->Fork((VoidFunctionPtr) SimpleThread, (void *)NULL);
     }
-    kernel->currentThread->Yield();
+    kernel->scheduler->Print();
+    cout << endl;
+    //kernel->currentThread->Yield();
 }
 
 
