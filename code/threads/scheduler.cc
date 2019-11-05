@@ -73,7 +73,7 @@ Scheduler::Scheduler(SchedulerType type)
         	break;
     	case SJF:
 		/* todo */
-            readyList = new SortedList<Thread *>(BurstTimeCompare);
+            readyList = new SortedList<Thread *>(ArrivalTimeCompare);
         	break;
         case SRTF:
         /* todo */
@@ -137,7 +137,8 @@ Scheduler::FindNextToRun ()
     if (readyList->IsEmpty()) {
 	return NULL;
     } else {
-        if(kernel->scheduler->getSchedulerType() == SRTF)
+        if(kernel->scheduler->getSchedulerType() == SRTF ||
+            kernel->scheduler->getSchedulerType() == SJF)
             return GetNextToRun();
     	return readyList->RemoveFront();
     }

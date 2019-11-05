@@ -69,30 +69,10 @@ Alarm::CallBack()
 	}
     } else {			// there's someone to preempt
         /* Added at HW2 */
-        if(kernel->scheduler->getSchedulerType() == RR) { // RR than preempt
+        if(kernel->scheduler->getSchedulerType() == RR ||
+            kernel->scheduler->getSchedulerType() == Priority_pt ||
+            kernel->scheduler->getSchedulerType() == SRTF) { // RR, Priority-preempt,SRTF than preempt
             interrupt->YieldOnReturn();
-        }
-        else if(kernel->scheduler->getSchedulerType() == Priority_pt) { // Priority check if running thread need to be preempt
-             
-            Scheduler *scheduler = kernel->scheduler;
-            Thread *thread = scheduler->FindNextToRun();
-            if(thread != NULL){
-                if(kernel->currentThread->getPriority() > thread->getPriority()){
-                    interrupt->YieldOnReturn();
-                }
-                scheduler->ReadyToRun(thread);
-            }
-        }
-        else if(kernel->scheduler->getSchedulerType() == SRTF){ //SRTF check if running thread need to be preempt
-            
-            Scheduler *scheduler = kernel->scheduler;
-            Thread *thread = scheduler->FindNextToRun();
-            if(thread != NULL) {
-                if(kernel->currentThread->getBurstTime() > thread->getBurstTime()) {
-                    interrupt->YieldOnReturn();
-                }
-                scheduler->ReadyToRun(thread);
-            }
         }
     }
 }
