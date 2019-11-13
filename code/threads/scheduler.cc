@@ -167,9 +167,10 @@ Scheduler::GetNextToRun()
         iter->Next();
         if(iter->IsDone()) break;
         
-        if(iter->Item()->getBurstTime() < kernel->currentThread->getBurstTime()){
+        if(iter->Item()->getBurstTime() < firstThread->getBurstTime()){
             firstThread = iter->Item();
         }
+        
     }
     // I got something
     if(!iter->IsDone()){

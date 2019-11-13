@@ -425,7 +425,7 @@ SimpleThread()
         Thread::currentTime++;  // burst
 
     	printf("%s: %d\n", kernel->currentThread->getName(), kernel->currentThread->getBurstTime());
-        //kernel->currentThread->Yield();
+        // kernel->currentThread->Yield();
 	    kernel->interrupt->OneTick();
     }    
 }
