@@ -46,10 +46,14 @@ UserProgKernel::UserProgKernel(int argc, char **argv)
     	}
         else if (strcmp(argv[i], "-prio") == 0) {    // @shungfu : Edit HW2 priority schedule
            ASSERT(execfileNum > 0 );
-           
-           stringstream ss(argv[i+1]);
            int p = 0;
-           ss >> p;
+           try{
+               stringstream ss(argv[i+1]);
+               ss >> p;
+           }
+           catch(...){
+               
+           }           
            prio[execfileNum] = p;
         }
 
@@ -106,7 +110,6 @@ UserProgKernel::Run()
 	for (int n=1;n<=execfileNum;n++)
 	{
 		t[n] = new Thread(execfile[n]);
-        DEBUG(dbgView, "UserProgKernel::Run(): " << n << " " << t[n]->getName() << " " << prio[n]);
         t[n]->setPriority(prio[n]);
 		t[n]->space = new AddrSpace();
 		t[n]->Fork((VoidFunctionPtr) &ForkExecute, (void *)t[n]);

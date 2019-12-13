@@ -206,8 +206,11 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
     vpn = (unsigned) virtAddr / PageSize;
     offset = (unsigned) virtAddr % PageSize;
     
+    DEBUG(dbgAddr, "vpn: " << vpn << ", pageTableSize: " << pageTableSize<< "PageSize: " << PageSize); //@shungfu
+    DEBUG(dbgAddr, "virtAddr / PageSize = " << (unsigned)virtAddr / PageSize)
+
     if (tlb == NULL) {		// => page table => vpn is index into table
-	if (vpn >= pageTableSize) {
+	if (vpn >= pageTableSize) { // vpn must smaller then the virtual page table size
 	    DEBUG(dbgAddr, "Illegal virtual page # " << virtAddr);
 	    return AddressErrorException;
 	} else if (!pageTable[vpn].valid) {
@@ -215,7 +218,7 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
 	    return PageFaultException;
 	}
 	entry = &pageTable[vpn];
-    } else {
+    } else {  // => TLB
         for (entry = NULL, i = 0; i < TLBSize; i++)
     	    if (tlb[i].valid && (tlb[i].virtualPage == vpn)) {
 		entry = &tlb[i];			// FOUND!

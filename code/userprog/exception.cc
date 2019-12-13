@@ -94,7 +94,12 @@ ExceptionHandler(ExceptionType which)
  		    break;
 	    }
 	    break;
+    // @shungfu: Edit ad Hw3
+    case PageFaultException:    // Page Fault happens
+        cout << "Page Fault" << endl;
+        return;
 	default:
+        cout << "PGException number: " << PageFaultException << endl;
 	    cerr << "Unexpected user mode exception" << which << "\n";
 	    break;
     }
