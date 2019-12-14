@@ -44,6 +44,8 @@ class SynchDisk : public CallBackObj {
 					// handler, to signal that the
 					// current disk operation is complete.
 
+//@shungfu: Edit at Hw3
+    bool *SectorUsed;    // Record which sector have been used
   private:
     Disk *disk;		  		// Raw disk device
     Semaphore *semaphore; 		// To synchronize requesting thread 

@@ -173,12 +173,19 @@ AddrSpace::Load(char *fileName)
         DEBUG(dbgHw3,"i: " << i << ", Free PhyPages: " << numFreePhyPages);
 
         if(numFreePhyPages < 1){    // Not enough Physical page
-            char *buffer = new char [PageSize];            
-            pageTable[i].physicalPage =NumPhysPages;            
+            int sec = 0;
+            while(kernel->synchDisk->SectorUsed[sec] == USED){  // SynchDisk sector have been Used
+                sec++;
+            }
+            ASSERT(sec < NumSectors);
+
+            pageTable[i].physicalPage = sec;    // points to the disk sector            
             pageTable[i].valid = FALSE;
                         
             // Copy from Real disk to SynchDisk(Nachos), unit: page, ReadAt(char* into, int numBytes, int position)                                          
+            char *buffer = new char [PageSize];
             executable->ReadAt( buffer, PageSize, noffH.code.inFileAddr + (i*PageSize) );
+            kernel->synchDisk->WriteSector(sec, buffer);
         }        
         else {  // Remaining Pages        
             int ppn = i;    // physical page number#
@@ -192,10 +199,10 @@ AddrSpace::Load(char *fileName)
             numFreePhyPages--;            
             physPageTable[ppn] = USED;            
             // Copy from Real disk to Physical Memory(Nachos), unit: page            
-            executable->ReadAt( &(kernel->machine->mainMemory[ppn * PageSize]), PageSize, noffH.code.inFileAddr + (i*PageSize) );            
+            executable->ReadAt( &(kernel->machine->mainMemory[ppn * PageSize + noffH.code.virtualAddr%PageSize]), PageSize, noffH.code.inFileAddr + (i*PageSize) );            
         }        
     }
-
+    DEBUG(dbgHw3, "code.infileAddr: " << noffH.code.inFileAddr << ", code.virtualAddr: " << noffH.code.virtualAddr);
 
 /*
 

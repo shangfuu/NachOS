@@ -32,6 +32,8 @@ SynchDisk::SynchDisk(char* name)
     semaphore = new Semaphore("synch disk", 0);
     lock = new Lock("synch disk lock");
     disk = new Disk(name, this);
+//@shungfu: Edit at Hw3
+    SectorUsed = new bool [NumSectors] ();
 }
 
 //----------------------------------------------------------------------
