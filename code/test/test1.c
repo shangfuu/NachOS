@@ -1,4 +1,8 @@
 #include "syscall.h"
+
+#define TEST 10
+int test[TEST]={0};
+
 main()
 	{
 		int	n;

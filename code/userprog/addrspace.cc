@@ -145,40 +145,22 @@ AddrSpace::Load(char *fileName)
     size = numPages * PageSize;
 
 // @shungfu : Edit at HW2/HW3
-    DEBUG(dbgView, "Used " << numPages << "Pages")
-    
-    DEBUG(dbgView, "size of AddrSpace: " << size);
-    ASSERT(numPages <= NumPhysPages);  // check we're not trying
+    DEBUG(dbgHw3, "\nUsed " << numPages << " Pages");
+    DEBUG(dbgHw3, "code size:" << noffH.code.size << "\ninitData size: " << noffH.initData.size << 
+                    "\nUninitData size: " << noffH.uninitData.size);
+    DEBUG(dbgHw3, "size of AddrSpace: " << size << "\n");
+//    ASSERT(numPages <= NumPhysPages);  // check we're not trying
 						              // to run anything bigger
                                       // than number of  physical pages
-                                      // in physicalPageTable
-    //@shungfu : Edit at Hw2
-    // Deploy the virtual and physical page tables.
-    pageTable = new TranslationEntry[numPages];
-    for(unsigned int i = 0; i < numPages; i++){
-    	// Deploy on only available index
-        int j = i;
-        while(j < NumPhysPages && physPageTable[j] == USED){
-            j++;
-        }
-        
-        physPageTable[j] = USED;
-        pageTable[i].physicalPage = j;
-        numFreePhyPages--;
-        // Same as original
-        pageTable[i].virtualPage = i;
-	    pageTable[i].valid = TRUE;
-    	pageTable[i].use = FALSE;
-    	pageTable[i].dirty = FALSE;
-        pageTable[i].readOnly = FALSE; 
-    } 
-
+                                      // in physicalPageTable 
+    
     DEBUG(dbgAddr, "Initializing address space: " << numPages << ", " << size);
 
-/*    Google on internet:
+/*
 Real Address:
 mainMemory[pageTable[noffH.code.virtualAddr/PageSize].physicalPage * PageSize + (noffH.code.virtualAddr%PageSize)]
 
+which page(p.physical) = #(virtualAddr/PageSize).physical
 page base: which page * PageSize.
 page offset:  code.address mod PageSize。
 Real Address(physical): page base + page offset
@@ -188,20 +170,63 @@ Real Address(physical): page base + page offset
 	if (noffH.code.size > 0) {
         DEBUG(dbgAddr, "Initializing code segment.");
 	    DEBUG(dbgAddr, noffH.code.virtualAddr << ", " << noffH.code.size);
-// @shungfu : Edit at Hw2
+
+
+//@shungfu : Edit at Hw3
+        // Deploy the virtual and physical page tables.
+        pageTable = new TranslationEntry[numPages];
+        for(unsigned int i = 0; i < numPages; i++){
+        	// Deploy on only available index
+            int j = i;
+            while(j < NumPhysPages && physPageTable[j] == USED){
+                j++;
+            }
+
+            physPageTable[j] = USED;
+            pageTable[i].physicalPage = j;
+            numFreePhyPages--;
+            // Same as original
+            pageTable[i].virtualPage = i;
+	        pageTable[i].valid = TRUE;
+    	    pageTable[i].use = FALSE;
+    	    pageTable[i].dirty = FALSE;
+            pageTable[i].readOnly = FALSE; 
+
+            // Copy from Real disk to Physical Memory(Nachos), unit: page
+            executable->ReadAt(
+		        &(kernel->machine->mainMemory[pageTable[noffH.code.virtualAddr/PageSize].physicalPage * PageSize + (noffH.code.virtualAddr % PageSize)]), 
+		        noffH.code.size, noffH.code.inFileAddr
+            );
+
+        }
+        else {
+
+            ;
+        }
+
+
+
         executable->ReadAt(
 		&(kernel->machine->mainMemory[pageTable[noffH.code.virtualAddr/PageSize].physicalPage * PageSize + (noffH.code.virtualAddr % PageSize)]), 
 		  noffH.code.size, noffH.code.inFileAddr
          );
+
+        DEBUG(dbgHw3,"Code Segment PhysicalPage: "<< pageTable[noffH.code.virtualAddr/PageSize].physicalPage << ", offset: " <<(noffH.code.virtualAddr % PageSize) );
     }
+
 	if (noffH.initData.size > 0) {
         DEBUG(dbgAddr, "Initializing data segment.");
 	    DEBUG(dbgAddr, noffH.initData.virtualAddr << ", " << noffH.initData.size);
+        
+
+
 // @shungfu : Edit at Hw2
         executable->ReadAt(
 		&(kernel->machine->mainMemory[pageTable[noffH.initData.virtualAddr/PageSize].physicalPage * PageSize + (noffH.initData.virtualAddr % PageSize)]),
 		  noffH.initData.size, noffH.initData.inFileAddr
          );
+
+        DEBUG(dbgHw3,"InitData Segment PhysicalPage: "<< pageTable[noffH.initData.virtualAddr/PageSize].physicalPage << ", offset: " <<(noffH.initData.virtualAddr % PageSize) );
     }
 
     delete executable;			// close file

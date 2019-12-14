@@ -99,8 +99,8 @@ ExceptionHandler(ExceptionType which)
         cout << "Page Fault" << endl;
         return;
 	default:
-        cout << "PGException number: " << PageFaultException << endl;
-	    cerr << "Unexpected user mode exception" << which << "\n";
+	    DEBUG(dbgHw3, "PGException number = " << 2);
+        cerr << "Unexpected user mode exception" << which << "\n";
 	    break;
     }
     ASSERTNOTREACHED();
