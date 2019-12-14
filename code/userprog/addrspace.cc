@@ -156,7 +156,49 @@ AddrSpace::Load(char *fileName)
     
     DEBUG(dbgAddr, "Initializing address space: " << numPages << ", " << size);
 
+
+
+//@shungfu : Edit at Hw3
+        
+    pageTable = new TranslationEntry[numPages];     // PageTable initial
+    // Deploy the virtual and physical page tables.
+    for(unsigned int i = 0; i < numPages; i++){
+
+        // Same operation of Enough/Not Enough phyical memory page
+        pageTable[i].virtualPage = i;            
+        pageTable[i].use = FALSE;
+        pageTable[i].dirty = FALSE;
+        pageTable[i].readOnly = FALSE;  
+            
+        DEBUG(dbgHw3,"i: " << i << ", Free PhyPages: " << numFreePhyPages);
+
+        if(numFreePhyPages < 1){    // Not enough Physical page
+            char *buffer = new char [PageSize];            
+            pageTable[i].physicalPage =NumPhysPages;            
+            pageTable[i].valid = FALSE;
+                        
+            // Copy from Real disk to SynchDisk(Nachos), unit: page, ReadAt(char* into, int numBytes, int position)                                          
+            executable->ReadAt( buffer, PageSize, noffH.code.inFileAddr + (i*PageSize) );
+        }        
+        else {  // Remaining Pages        
+            int ppn = i;    // physical page number#
+            
+            // Deploy on only available index                        
+            while(ppn < NumPhysPages && physPageTable[ppn] == USED){            
+                ppn++;                
+            }                        
+            pageTable[i].physicalPage = ppn;                           
+            pageTable[i].valid = TRUE;            
+            numFreePhyPages--;            
+            physPageTable[ppn] = USED;            
+            // Copy from Real disk to Physical Memory(Nachos), unit: page            
+            executable->ReadAt( &(kernel->machine->mainMemory[ppn * PageSize]), PageSize, noffH.code.inFileAddr + (i*PageSize) );            
+        }        
+    }
+
+
 /*
+
 Real Address:
 mainMemory[pageTable[noffH.code.virtualAddr/PageSize].physicalPage * PageSize + (noffH.code.virtualAddr%PageSize)]
 
@@ -166,50 +208,16 @@ page offset:  code.address mod PageSize。
 Real Address(physical): page base + page offset
 */
 
+
 // then, copy in the code and data segments from disk into memory(physical)
 	if (noffH.code.size > 0) {
         DEBUG(dbgAddr, "Initializing code segment.");
 	    DEBUG(dbgAddr, noffH.code.virtualAddr << ", " << noffH.code.size);
-
-
-//@shungfu : Edit at Hw3
-        // Deploy the virtual and physical page tables.
-        pageTable = new TranslationEntry[numPages];
-        for(unsigned int i = 0; i < numPages; i++){
-        	// Deploy on only available index
-            int j = i;
-            while(j < NumPhysPages && physPageTable[j] == USED){
-                j++;
-            }
-
-            physPageTable[j] = USED;
-            pageTable[i].physicalPage = j;
-            numFreePhyPages--;
-            // Same as original
-            pageTable[i].virtualPage = i;
-	        pageTable[i].valid = TRUE;
-    	    pageTable[i].use = FALSE;
-    	    pageTable[i].dirty = FALSE;
-            pageTable[i].readOnly = FALSE; 
-
-            // Copy from Real disk to Physical Memory(Nachos), unit: page
-            executable->ReadAt(
-		        &(kernel->machine->mainMemory[pageTable[noffH.code.virtualAddr/PageSize].physicalPage * PageSize + (noffH.code.virtualAddr % PageSize)]), 
-		        noffH.code.size, noffH.code.inFileAddr
-            );
-
-        }
-        else {
-
-            ;
-        }
-
-
-
-        executable->ReadAt(
-		&(kernel->machine->mainMemory[pageTable[noffH.code.virtualAddr/PageSize].physicalPage * PageSize + (noffH.code.virtualAddr % PageSize)]), 
-		  noffH.code.size, noffH.code.inFileAddr
-         );
+                
+//        executable->ReadAt(
+//		&(kernel->machine->mainMemory[pageTable[noffH.code.virtualAddr/PageSize].physicalPage * PageSize + (noffH.code.virtualAddr % PageSize)]), 
+//		  noffH.code.size, noffH.code.inFileAddr
+//        );
 
         DEBUG(dbgHw3,"Code Segment PhysicalPage: "<< pageTable[noffH.code.virtualAddr/PageSize].physicalPage << ", offset: " <<(noffH.code.virtualAddr % PageSize) );
     }
@@ -218,13 +226,11 @@ Real Address(physical): page base + page offset
         DEBUG(dbgAddr, "Initializing data segment.");
 	    DEBUG(dbgAddr, noffH.initData.virtualAddr << ", " << noffH.initData.size);
         
-
-
 // @shungfu : Edit at Hw2
-        executable->ReadAt(
-		&(kernel->machine->mainMemory[pageTable[noffH.initData.virtualAddr/PageSize].physicalPage * PageSize + (noffH.initData.virtualAddr % PageSize)]),
-		  noffH.initData.size, noffH.initData.inFileAddr
-         );
+//        executable->ReadAt(
+//		&(kernel->machine->mainMemory[pageTable[noffH.initData.virtualAddr/PageSize].physicalPage * PageSize + (noffH.initData.virtualAddr % PageSize)]),
+//		  noffH.initData.size, noffH.initData.inFileAddr
+//        );
 
         DEBUG(dbgHw3,"InitData Segment PhysicalPage: "<< pageTable[noffH.initData.virtualAddr/PageSize].physicalPage << ", offset: " <<(noffH.initData.virtualAddr % PageSize) );
     }
