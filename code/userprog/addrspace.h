@@ -49,7 +49,8 @@ class AddrSpace {
 
     void InitRegisters();		// Initialize user-level CPU registers,
 					// before jumping to user code
-
+//@shungfu: Edit at HW3
+    bool PT_Load; //Used to check if load file success
 };
 
 #endif // ADDRSPACE_H

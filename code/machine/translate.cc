@@ -206,8 +206,8 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
     vpn = (unsigned) virtAddr / PageSize;
     offset = (unsigned) virtAddr % PageSize;
     
-    DEBUG(dbgHw3, "vpn: " << vpn << ", offset: " << offset << ", pageTableSize: " << pageTableSize<< "PageSize: " << PageSize); //@shungfu
-    DEBUG(dbgHw3, "virtAddr / PageSize = " << (unsigned)virtAddr / PageSize)
+    DEBUG(dbgHw3T, "vpn: " << vpn << ", offset: " << offset << ", pageTableSize: " << pageTableSize<< "PageSize: " << PageSize); //@shungfu
+    DEBUG(dbgHw3T, "virtAddr / PageSize = " << (unsigned)virtAddr / PageSize)
 
     if (tlb == NULL) {		// => page table => vpn is index into table
 	if (vpn >= pageTableSize) { // vpn must smaller then the virtual page table size

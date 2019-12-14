@@ -177,13 +177,16 @@ AddrSpace::Load(char *fileName)
             while(kernel->synchDisk->SectorUsed[sec] == USED){  // SynchDisk sector have been Used
                 sec++;
             }
-            ASSERT(sec < NumSectors);
+
+            ASSERT(sec < NumSectors);   // check if setor number is in safe zone
+            kernel->synchDisk->SectorUsed[sec] = USED;  // set sector to USED
 
             pageTable[i].physicalPage = sec;    // points to the disk sector            
             pageTable[i].valid = FALSE;
-                        
+            
             // Copy from Real disk to SynchDisk(Nachos), unit: page, ReadAt(char* into, int numBytes, int position)                                          
             char *buffer = new char [PageSize];
+            DEBUG(dbgHw3,"sec: " << sec);
             executable->ReadAt( buffer, PageSize, noffH.code.inFileAddr + (i*PageSize) );
             kernel->synchDisk->WriteSector(sec, buffer);
         }        
@@ -257,6 +260,7 @@ Real Address(physical): page base + page offset
 void 
 AddrSpace::Execute(char *fileName) 
 {
+    PT_Load = FALSE;
     if (!Load(fileName)) {
 	cout << "inside !Load(FileName)" << endl;
 	return;				// executable not found
@@ -265,7 +269,8 @@ AddrSpace::Execute(char *fileName)
     //kernel->currentThread->space = this;
     this->InitRegisters();		// set the initial register values
     this->RestoreState();		// load page table register
-
+    
+    PT_Load = TRUE;
     kernel->machine->Run();		// jump to the user progam
 
     ASSERTNOTREACHED();			// machine->Run never returns;
@@ -317,8 +322,10 @@ AddrSpace::InitRegisters()
 
 void AddrSpace::SaveState() 
 {
+    if(PT_Load){
         pageTable=kernel->machine->pageTable;
         numPages=kernel->machine->pageTableSize;
+    }
 }
 
 //----------------------------------------------------------------------

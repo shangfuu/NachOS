@@ -96,7 +96,7 @@ ExceptionHandler(ExceptionType which)
 	    break;
     // @shungfu: Edit ad Hw3
     case PageFaultException:    // Page Fault happens
-        cout << "Page Fault" << endl;
+        cout << "Page Fault\t";
         return;
 	default:
 	    DEBUG(dbgHw3, "PGException number = " << 2);
