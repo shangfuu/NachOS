@@ -97,13 +97,12 @@ AddrSpace::~AddrSpace()
 {
 // @shungfu : Edit at Hw2
     // Free physPageTable we have used, just turn the state to NOT_USED.
-  /*
     for(int i = 0; i < numPages; i++){
-        physPageTable[pageTable[i].physicalPage] = NOT_USED;
-        numFreePhyPages++;
+        int physPage = pageTable[i].physicalPage;
+        kernel->physPageTable->CleanUp(physPage);
     }
+    DEBUG(dbgHw3, "Physical page cleaning up =======>");
     delete pageTable;
-    */
 }
 
 
@@ -148,7 +147,7 @@ AddrSpace::Load(char *fileName)
 
 // @shungfu : Edit at HW2/HW3
     DEBUG(dbgHw3,"\n-----------------------");
-    DEBUG(dbgHw3, "Used " << numPages << " Pages");
+    cout <<  "Used " << numPages << " Pages\n";
     DEBUG(dbgHw3, "code size:" << noffH.code.size << "\ninitData size: " << noffH.initData.size << 
                     "\nUninitData size: " << noffH.uninitData.size);
     DEBUG(dbgHw3, "size of AddrSpace: " << size);
@@ -195,7 +194,7 @@ AddrSpace::Load(char *fileName)
             kernel->vmDisk->WriteSector(sec, buffer);
         }        
         else {  // Remaining Pages        
-            int ppn = i;    // physical page number#
+            int ppn = 0;    // physical page number#
             
             // Deploy on only available index                        
             while(ppn < NumPhysPages && kernel->physPageTable->used[ppn] == USED){            
@@ -208,7 +207,7 @@ AddrSpace::Load(char *fileName)
             kernel->physPageTable->virtPage[ppn] = i;
             kernel->physPageTable->load_time[ppn] = kernel->memManageUnit->loading_time;
             kernel->memManageUnit->loading_time++;
-           
+            DEBUG(dbgHw3,"PPN: " << ppn); 
 
             // Copy from Real disk to Physical Memory(Nachos), unit: page            
             executable->ReadAt( &(kernel->machine->mainMemory[ppn * PageSize]), PageSize, noffH.code.inFileAddr + (i*PageSize) );            

@@ -20,5 +20,6 @@ class PhysPageTable{
         int *load_time;  // used to record load time at FIFO
         int *virtPage; // back points to virtual Page#
         int numFreePhyPages;    // Number of physical pages can be used
+        void CleanUp(int page); // Clean up when a userprog is returned
 };
 #endif

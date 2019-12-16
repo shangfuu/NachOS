@@ -44,6 +44,9 @@ MMU::pageFault(unsigned int vpn){
             // Get victim's virtaul page
             int virtPage = kernel->physPageTable->virtPage[victim];
             
+            cout << "Swap out physical page " << victim << endl;
+            cout << "Swap in virtual page " << vpn << endl;
+
             // swap in
             swap_in(vpn, victim);
 

@@ -21,6 +21,14 @@ PhysPageTable::PhysPageTable(){
 }
 
 PhysPageTable::~PhysPageTable(){
+    
+}
 
+void
+PhysPageTable::CleanUp(int page){
+    kernel->physPageTable->used[page] = NOT_USED;
+    kernel->physPageTable->virtPage[page] = 0;
+    kernel->physPageTable->load_time[page] = 0;
+    kernel->physPageTable->numFreePhyPages++;
 }
 

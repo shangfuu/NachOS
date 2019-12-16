@@ -70,7 +70,10 @@ Thread::Thread(char* threadName)
 Thread::~Thread()
 {
     DEBUG(dbgThread, "Deleting thread: " << name);
-
+#ifdef USER_PROGRAM
+    delete space;
+    DEBUG(dbgHw3,"Deleting thread: " << name);
+#endif
     ASSERT(this != kernel->currentThread);
     if (stack != NULL)
 	DeallocBoundedArray((char *) stack, StackSize * sizeof(int));
