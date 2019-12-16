@@ -89,6 +89,8 @@ USERPROG_H = ../userprog/addrspace.h\
 	../userprog/userkernel.h\
 	../userprog/syscall.h\
 	../userprog/synchconsole.h\
+    ../userprog/MMU.h\
+    ../userprog/physPageTable.h\
         ../filesys/filesys.h\
         ../filesys/openfile.h\
         ../machine/console.h\
@@ -102,6 +104,8 @@ USERPROG_C = ../userprog/addrspace.cc\
         ../userprog/exception.cc\
 	../userprog/synchconsole.cc\
 	../userprog/userkernel.cc\
+    ../userprog/MMU.cc\
+    ../userprog/physPageTable.cc\
         ../machine/console.cc\
         ../machine/machine.cc\
         ../machine/mipssim.cc\
@@ -110,7 +114,7 @@ USERPROG_C = ../userprog/addrspace.cc\
 	../machine/disk.cc
 
 USERPROG_O = addrspace.o exception.o synchconsole.o console.o machine.o \
-        mipssim.o translate.o userkernel.o synchdisk.o disk.o
+        mipssim.o translate.o userkernel.o synchdisk.o disk.o MMU.o physPageTable.o
 
 FILESYS_H = ../filesys/directory.h\
         ../filesys/filehdr.h\

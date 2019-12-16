@@ -11,6 +11,9 @@
 nachos
 coff2noff
 
+# SynchDisk
+Backing Store
+
 # test folder
 #/code/test/*.c
 #/code/test/*

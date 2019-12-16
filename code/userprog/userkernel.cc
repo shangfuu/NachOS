@@ -22,6 +22,7 @@ UserProgKernel::UserProgKernel(int argc, char **argv)
 {
     debugUserProg = FALSE;
 	execfileNum=0;
+    type = FIFO;   // Default Page Replacement Algorithm use FIFO
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-s") == 0) {
     	    debugUserProg = TRUE;
@@ -56,6 +57,13 @@ UserProgKernel::UserProgKernel(int argc, char **argv)
            }           
            prio[execfileNum] = p;
         }
+        // Page Replacement Algorithms
+        else if (strcmp(argv[i],"-FIFO")==0){
+            type = FIFO;
+        }
+        else if(strcmp(argv[i],"-LRU")==0){
+            type = LRU;
+        }
 
     }
 }
@@ -72,6 +80,10 @@ UserProgKernel::Initialize()
 
     machine = new Machine(debugUserProg);
     fileSystem = new FileSystem();
+//@shungfu: Edit at Hw3
+    vmDisk = new SynchDisk("Backing Store");
+    MemManageUnit = new MMU(type);
+    physPageTable = new PhysPageTable();
 #ifdef FILESYS
     synchDisk = new SynchDisk("New SynchDisk");
 #endif // FILESYS
@@ -87,6 +99,10 @@ UserProgKernel::~UserProgKernel()
 {
     delete fileSystem;
     delete machine;
+//@shungfu: Edit at Hw3
+    delete vmDisk;
+    delete MemManageUnit;
+    delete physPageTable;
 #ifdef FILESYS
     delete synchDisk;
 #endif

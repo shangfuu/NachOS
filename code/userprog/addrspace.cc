@@ -23,8 +23,8 @@
 
 // @shungfu : Edit at HW2
 // Can't initial at .h
-int AddrSpace::numFreePhyPages = NumPhysPages;
-bool AddrSpace::physPageTable[NumPhysPages] = {NOT_USED};
+//int AddrSpace::numFreePhyPages = NumPhysPages;
+//bool AddrSpace::physPageTable[NumPhysPages] = {NOT_USED};
 
 //----------------------------------------------------------------------
 // SwapHeader
@@ -97,11 +97,13 @@ AddrSpace::~AddrSpace()
 {
 // @shungfu : Edit at Hw2
     // Free physPageTable we have used, just turn the state to NOT_USED.
+  /*
     for(int i = 0; i < numPages; i++){
         physPageTable[pageTable[i].physicalPage] = NOT_USED;
         numFreePhyPages++;
     }
     delete pageTable;
+    */
 }
 
 
@@ -145,10 +147,12 @@ AddrSpace::Load(char *fileName)
     size = numPages * PageSize;
 
 // @shungfu : Edit at HW2/HW3
-    DEBUG(dbgHw3, "\nUsed " << numPages << " Pages");
+    DEBUG(dbgHw3,"\n-----------------------");
+    DEBUG(dbgHw3, "Used " << numPages << " Pages");
     DEBUG(dbgHw3, "code size:" << noffH.code.size << "\ninitData size: " << noffH.initData.size << 
                     "\nUninitData size: " << noffH.uninitData.size);
-    DEBUG(dbgHw3, "size of AddrSpace: " << size << "\n");
+    DEBUG(dbgHw3, "size of AddrSpace: " << size);
+    DEBUG(dbgHw3,"-----------------------" << endl);
 //    ASSERT(numPages <= NumPhysPages);  // check we're not trying
 						              // to run anything bigger
                                       // than number of  physical pages
@@ -158,28 +162,28 @@ AddrSpace::Load(char *fileName)
 
 
 
-//@shungfu : Edit at Hw3
-        
+//@shungfu : Edit at Hw3        
     pageTable = new TranslationEntry[numPages];     // PageTable initial
+    
     // Deploy the virtual and physical page tables.
     for(unsigned int i = 0; i < numPages; i++){
 
         // Same operation of Enough/Not Enough phyical memory page
-        pageTable[i].virtualPage = i;            
+        pageTable[i].virtualPage = i;
         pageTable[i].use = FALSE;
         pageTable[i].dirty = FALSE;
         pageTable[i].readOnly = FALSE;  
-            
-        DEBUG(dbgHw3,"i: " << i << ", Free PhyPages: " << numFreePhyPages);
+         
+        DEBUG(dbgHw3,"i: " << i << ", Free PhyPages: " << kernel->physPageTable->numFreePhyPages);
 
-        if(numFreePhyPages < 1){    // Not enough Physical page
+        if(kernel->physPageTable->numFreePhyPages < 1){    // Not enough Physical page
             int sec = 0;
-            while(kernel->synchDisk->SectorUsed[sec] == USED){  // SynchDisk sector have been Used
+            while(kernel->vmDisk->SectorUsed[sec] == USED){  // SynchDisk sector have been Used
                 sec++;
             }
 
             ASSERT(sec < NumSectors);   // check if setor number is in safe zone
-            kernel->synchDisk->SectorUsed[sec] = USED;  // set sector to USED
+            kernel->vmDisk->SectorUsed[sec] = USED;  // set sector to USED
 
             pageTable[i].physicalPage = sec;    // points to the disk sector            
             pageTable[i].valid = FALSE;
@@ -188,23 +192,24 @@ AddrSpace::Load(char *fileName)
             char *buffer = new char [PageSize];
             DEBUG(dbgHw3,"sec: " << sec);
             executable->ReadAt( buffer, PageSize, noffH.code.inFileAddr + (i*PageSize) );
-            kernel->synchDisk->WriteSector(sec, buffer);
+            kernel->vmDisk->WriteSector(sec, buffer);
         }        
         else {  // Remaining Pages        
             int ppn = i;    // physical page number#
             
             // Deploy on only available index                        
-            while(ppn < NumPhysPages && physPageTable[ppn] == USED){            
+            while(ppn < NumPhysPages && kernel->physPageTable->used[ppn] == USED){            
                 ppn++;                
             }                        
             pageTable[i].physicalPage = ppn;                           
             pageTable[i].valid = TRUE;            
-            numFreePhyPages--;            
-            physPageTable[ppn] = USED;            
+            kernel->physPageTable->numFreePhyPages--;            
+            kernel->physPageTable->used[ppn] = USED;            
             // Copy from Real disk to Physical Memory(Nachos), unit: page            
             executable->ReadAt( &(kernel->machine->mainMemory[ppn * PageSize + noffH.code.virtualAddr%PageSize]), PageSize, noffH.code.inFileAddr + (i*PageSize) );            
         }        
     }
+    DEBUG(dbgHw3,"\n-----------------------");
     DEBUG(dbgHw3, "code.infileAddr: " << noffH.code.inFileAddr << ", code.virtualAddr: " << noffH.code.virtualAddr);
 
 /*
@@ -229,7 +234,7 @@ Real Address(physical): page base + page offset
 //		  noffH.code.size, noffH.code.inFileAddr
 //        );
 
-        DEBUG(dbgHw3,"Code Segment PhysicalPage: "<< pageTable[noffH.code.virtualAddr/PageSize].physicalPage << ", offset: " <<(noffH.code.virtualAddr % PageSize) );
+        DEBUG(dbgHw3,"Code Segment PhysicalPage: "<< pageTable[noffH.code.virtualAddr/PageSize].physicalPage << ", offset: " <<(noffH.code.virtualAddr % PageSize));
     }
 
 	if (noffH.initData.size > 0) {
@@ -242,9 +247,9 @@ Real Address(physical): page base + page offset
 //		  noffH.initData.size, noffH.initData.inFileAddr
 //        );
 
-        DEBUG(dbgHw3,"InitData Segment PhysicalPage: "<< pageTable[noffH.initData.virtualAddr/PageSize].physicalPage << ", offset: " <<(noffH.initData.virtualAddr % PageSize) );
+        DEBUG(dbgHw3,"InitData Segment PhysicalPage: "<< pageTable[noffH.initData.virtualAddr/PageSize].physicalPage << ", offset: " <<(noffH.initData.virtualAddr % PageSize));
     }
-
+    DEBUG(dbgHw3,"-----------------------" << endl);
     delete executable;			// close file
     return TRUE;			// success
 }

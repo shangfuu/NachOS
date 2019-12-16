@@ -12,12 +12,13 @@
 #ifndef USERKERNEL_H  
 #define USERKERNEL_H
 
-#define FILESYS //@shungfu: Edit at Hw3, used to enable SynchDisk
-
 #include "kernel.h"
 #include "filesys.h"
 #include "machine.h"
 #include "synchdisk.h"
+
+#include "MMU.h"
+#include "physPageTable.h"
 class SynchDisk;
 class UserProgKernel : public ThreadedKernel {
   public:
@@ -35,6 +36,12 @@ class UserProgKernel : public ThreadedKernel {
     Machine *machine;
     FileSystem *fileSystem;
 
+//@shungfu: Edit at Hw3
+    MMU *MemManageUnit; // MMU
+    PhysPageTable *physPageTable;
+    SynchDisk *vmDisk;  // Backing Store in Nachos.
+                        // not using synchDisk because not sure what will happen
+
 #ifdef FILESYS
     SynchDisk *synchDisk;
 #endif // FILESYS
@@ -46,6 +53,7 @@ class UserProgKernel : public ThreadedKernel {
 	int	execfileNum;
     // @shungfu : Edit HW2
     int prio[10];   // priority of thread
+    PagingType type;    // Page Replacement  Algorithm
 };
 
 #endif //USERKERNEL_H

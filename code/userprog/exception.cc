@@ -25,6 +25,7 @@
 #include "main.h"
 #include "syscall.h"
 
+#include "synch.h"
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -53,6 +54,7 @@ ExceptionHandler(ExceptionType which)
 {
 	int	type = kernel->machine->ReadRegister(2);
 	int	val;
+    Lock* pageLock=NULL;
 
     switch (which) {
 	case SyscallException:
@@ -97,6 +99,21 @@ ExceptionHandler(ExceptionType which)
     // @shungfu: Edit ad Hw3
     case PageFaultException:    // Page Fault happens
         cout << "Page Fault\t";
+        int Error_VAddr;
+        unsigned int vpn;
+
+        Error_VAddr = kernel->machine->ReadRegister(BadVAddrReg);   // the virtual addr makes page fault.
+        vpn = (unsigned)Error_VAddr / PageSize;   // virtual page number
+        
+        if (pageLock == NULL){
+            pageLock = new Lock("PageLock");
+        }
+
+        pageLock->Acquire();
+        kernel->MemManageUnit->pageFault(vpn);
+        pageLock->Release();
+
+        DEBUG(dbgHw3, "Pagetable: " << &kernel->machine->pageTable[vpn] << endl);
         return;
 	default:
 	    DEBUG(dbgHw3, "PGException number = " << 2);
