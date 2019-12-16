@@ -187,7 +187,7 @@ AddrSpace::Load(char *fileName)
 
             pageTable[i].physicalPage = sec;    // points to the disk sector            
             pageTable[i].valid = FALSE;
-            
+
             // Copy from Real disk to SynchDisk(Nachos), unit: page, ReadAt(char* into, int numBytes, int position)                                          
             char *buffer = new char [PageSize];
             DEBUG(dbgHw3,"sec: " << sec);
@@ -204,9 +204,14 @@ AddrSpace::Load(char *fileName)
             pageTable[i].physicalPage = ppn;                           
             pageTable[i].valid = TRUE;            
             kernel->physPageTable->numFreePhyPages--;            
-            kernel->physPageTable->used[ppn] = USED;            
+            kernel->physPageTable->used[ppn] = USED;
+            kernel->physPageTable->virtPage[ppn] = i;
+            kernel->physPageTable->load_time[ppn] = kernel->memManageUnit->loading_time;
+            kernel->memManageUnit->loading_time++;
+           
+
             // Copy from Real disk to Physical Memory(Nachos), unit: page            
-            executable->ReadAt( &(kernel->machine->mainMemory[ppn * PageSize + noffH.code.virtualAddr%PageSize]), PageSize, noffH.code.inFileAddr + (i*PageSize) );            
+            executable->ReadAt( &(kernel->machine->mainMemory[ppn * PageSize]), PageSize, noffH.code.inFileAddr + (i*PageSize) );            
         }        
     }
     DEBUG(dbgHw3,"\n-----------------------");

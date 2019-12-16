@@ -82,7 +82,7 @@ UserProgKernel::Initialize()
     fileSystem = new FileSystem();
 //@shungfu: Edit at Hw3
     vmDisk = new SynchDisk("Backing Store");
-    MemManageUnit = new MMU(type);
+    memManageUnit = new MMU(type);
     physPageTable = new PhysPageTable();
 #ifdef FILESYS
     synchDisk = new SynchDisk("New SynchDisk");
@@ -101,7 +101,7 @@ UserProgKernel::~UserProgKernel()
     delete machine;
 //@shungfu: Edit at Hw3
     delete vmDisk;
-    delete MemManageUnit;
+    delete memManageUnit;
     delete physPageTable;
 #ifdef FILESYS
     delete synchDisk;

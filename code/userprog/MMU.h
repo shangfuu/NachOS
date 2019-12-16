@@ -14,12 +14,14 @@ class MMU{
         ~MMU();
 
         void pageFault(unsigned int vpn);   // Will called by ExceptionHandler()
-        void Algo_FIFO(unsigned int vpn);
-        void Algo_LRU(unsigned int vpn);
-
+//        void Algo_FIFO(unsigned int vpn);
+//        void Algo_LRU(unsigned int vpn);
+        int getVictim();
+        void swap_out(char* buf, int sec, int virtPage);
+        void swap_in(unsigned int vpn, int victim);
         int loading_time;   // used at FIFO, will increased while page fault happend
     private:
         PagingType type;    // Algorithm choosed
-        int victim; // victim page        
+//        int victim; // victim page        
 };
 #endif

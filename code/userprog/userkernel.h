@@ -37,7 +37,7 @@ class UserProgKernel : public ThreadedKernel {
     FileSystem *fileSystem;
 
 //@shungfu: Edit at Hw3
-    MMU *MemManageUnit; // MMU
+    MMU *memManageUnit; // MMU
     PhysPageTable *physPageTable;
     SynchDisk *vmDisk;  // Backing Store in Nachos.
                         // not using synchDisk because not sure what will happen

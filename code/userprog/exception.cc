@@ -98,25 +98,27 @@ ExceptionHandler(ExceptionType which)
 	    break;
     // @shungfu: Edit ad Hw3
     case PageFaultException:    // Page Fault happens
-        cout << "Page Fault\t";
+        
+        kernel->stats->numPageFaults++; // Add statistic Number of Page Faults
         int Error_VAddr;
         unsigned int vpn;
 
         Error_VAddr = kernel->machine->ReadRegister(BadVAddrReg);   // the virtual addr makes page fault.
         vpn = (unsigned)Error_VAddr / PageSize;   // virtual page number
         
-        if (pageLock == NULL){
-            pageLock = new Lock("PageLock");
+        cout << "Page Fault, at vpn: " << vpn << endl;
+       
+        if (pageLock == NULL){  // make a semaphore lock if there is not
+            pageLock = new Lock("PageLock");    // only one process can do page replacement at on time
         }
 
         pageLock->Acquire();
-        kernel->MemManageUnit->pageFault(vpn);
+        kernel->memManageUnit->pageFault(vpn);
         pageLock->Release();
 
         DEBUG(dbgHw3, "Pagetable: " << &kernel->machine->pageTable[vpn] << endl);
         return;
 	default:
-	    DEBUG(dbgHw3, "PGException number = " << 2);
         cerr << "Unexpected user mode exception" << which << "\n";
 	    break;
     }

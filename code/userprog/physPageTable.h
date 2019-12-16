@@ -18,6 +18,7 @@ class PhysPageTable{
 
         bool *used;    // Used to record the physical page table that have been used, default set not used
         int *load_time;  // used to record load time at FIFO
+        int *virtPage; // back points to virtual Page#
         int numFreePhyPages;    // Number of physical pages can be used
 };
 #endif
