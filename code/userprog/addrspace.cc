@@ -96,13 +96,13 @@ AddrSpace::AddrSpace()
 AddrSpace::~AddrSpace()
 {
 // @shungfu : Edit at Hw2
-    DEBUG(dbgHw3, "\nPhysical page cleaning up =======>");
+    cout << "\n=========== Physical page cleaning up " << kernel->currentThread->getName() << " ==========> " << endl;
     // Free physPageTable we have used, just turn the state to NOT_USED.
     for(int i = 0; i < numPages; i++){
         int physPage = pageTable[i].physicalPage;
         if(pageTable[i].valid == TRUE){    // Clean up physical page
             kernel->physPageTable->CleanUp(physPage);
-            cout << "Physical page " << physPage << " cleaning up." << endl;
+            DEBUG(dbgHw3, "Physical page " << physPage << " cleaning up." << endl);
         }
         else{   // clean up Vm Disk
             kernel->vmDisk->SectorUsed[physPage] = NOT_USED;
@@ -152,12 +152,12 @@ AddrSpace::Load(char *fileName)
     size = numPages * PageSize;
 
 // @shungfu : Edit at HW2/HW3
-    DEBUG(dbgHw3,"\n-----------------------");
+    DEBUG(dbgAddr,"\n-----------------------");
     cout <<  "Used " << numPages << " Pages\n";
-    DEBUG(dbgHw3, "code size:" << noffH.code.size << "\ninitData size: " << noffH.initData.size << 
+    DEBUG(dbgAddr, "code size:" << noffH.code.size << "\ninitData size: " << noffH.initData.size << 
                     "\nUninitData size: " << noffH.uninitData.size);
-    DEBUG(dbgHw3, "size of AddrSpace: " << size);
-    DEBUG(dbgHw3,"-----------------------" << endl);
+    DEBUG(dbgAddr, "size of AddrSpace: " << size);
+    DEBUG(dbgAddr,"-----------------------" << endl);
 //    ASSERT(numPages <= NumPhysPages);  // check we're not trying
 						              // to run anything bigger
                                       // than number of  physical pages
