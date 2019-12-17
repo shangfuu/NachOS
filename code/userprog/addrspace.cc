@@ -96,6 +96,7 @@ AddrSpace::AddrSpace()
 AddrSpace::~AddrSpace()
 {
 // @shungfu : Edit at Hw2
+    DEBUG(dbgHw3, "\nPhysical page cleaning up =======>");
     // Free physPageTable we have used, just turn the state to NOT_USED.
     for(int i = 0; i < numPages; i++){
         int physPage = pageTable[i].physicalPage;
@@ -107,8 +108,6 @@ AddrSpace::~AddrSpace()
             kernel->vmDisk->SectorUsed[physPage] = NOT_USED;
         }
     }
-    
-    DEBUG(dbgHw3, "Physical page cleaning up =======>");
     delete pageTable;
 }
 
@@ -167,7 +166,7 @@ AddrSpace::Load(char *fileName)
     DEBUG(dbgAddr, "Initializing address space: " << numPages << ", " << size);
 
 
-
+    DEBUG(dbgHw3, "------- Initializing address space -------");
 //@shungfu : Edit at Hw3        
     pageTable = new TranslationEntry[numPages];     // PageTable initial
     
@@ -178,9 +177,7 @@ AddrSpace::Load(char *fileName)
         pageTable[i].virtualPage = i;
         pageTable[i].use = FALSE;
         pageTable[i].dirty = FALSE;
-        pageTable[i].readOnly = FALSE;  
-         
-//        DEBUG(dbgHw3,"i: " << i << ", Free PhyPages: " << kernel->physPageTable->numFreePhyPages);
+        pageTable[i].readOnly = FALSE;           
 
         if(kernel->physPageTable->numFreePhyPages < 1){    // Not enough Physical page
             int sec = 0;
@@ -217,12 +214,12 @@ AddrSpace::Load(char *fileName)
             if(kernel->memManageUnit->getPagingType() == FIFO){     // FIFO used
                 kernel->physPageTable->load_time[ppn] = kernel->memManageUnit->loading_time;
                 kernel->memManageUnit->loading_time++; 
-DEBUG(dbgHw3, "Free Physical Memory page #" << ppn << " loading time: " << kernel->memManageUnit->loading_time-1);
+                DEBUG(dbgHw3, "Free Physical Memory page #" << ppn << ", loading time: " << kernel->memManageUnit->loading_time-1);
             }
             else{   // LRU used
                 kernel->physPageTable->load_time[ppn] = kernel->memManageUnit->counter;
                 kernel->memManageUnit->counter++;
-DEBUG(dbgHw3, "Free Physical Memory page #" << ppn << " counter: " << kernel->memManageUnit->counter-1);
+                DEBUG(dbgHw3, "Free Physical Memory page #" << ppn << ", counter: " << kernel->memManageUnit->counter-1);
             }
 
             // Copy from Real disk to Physical Memory(Nachos), unit: page            
@@ -230,8 +227,10 @@ DEBUG(dbgHw3, "Free Physical Memory page #" << ppn << " counter: " << kernel->me
         }        
         DEBUG(dbgHw3, "Put " << kernel->currentThread->getName() << "'s vpn " << i << " in.");
     }
-    DEBUG(dbgHw3,"\n-----------------------");
-    DEBUG(dbgHw3, "code.infileAddr: " << noffH.code.inFileAddr << ", code.virtualAddr: " << noffH.code.virtualAddr);
+
+    DEBUG(dbgHw3, "--------------------------------------------\n");
+//    DEBUG(dbgHw3,"\n-----------------------");
+//    DEBUG(dbgHw3, "code.infileAddr: " << noffH.code.inFileAddr << ", code.virtualAddr: " << noffH.code.virtualAddr);
 
 /*
 
@@ -255,7 +254,7 @@ Real Address(physical): page base + page offset
 //		  noffH.code.size, noffH.code.inFileAddr
 //        );
 
-        DEBUG(dbgHw3,"Code Segment PhysicalPage: "<< pageTable[noffH.code.virtualAddr/PageSize].physicalPage << ", offset: " <<(noffH.code.virtualAddr % PageSize));
+//        DEBUG(dbgHw3,"Code Segment PhysicalPage: "<< pageTable[noffH.code.virtualAddr/PageSize].physicalPage << ", offset: " <<(noffH.code.virtualAddr % PageSize));
     }
 
 	if (noffH.initData.size > 0) {
@@ -268,9 +267,9 @@ Real Address(physical): page base + page offset
 //		  noffH.initData.size, noffH.initData.inFileAddr
 //        );
 
-        DEBUG(dbgHw3,"InitData Segment PhysicalPage: "<< pageTable[noffH.initData.virtualAddr/PageSize].physicalPage << ", offset: " <<(noffH.initData.virtualAddr % PageSize));
+//        DEBUG(dbgHw3,"InitData Segment PhysicalPage: "<< pageTable[noffH.initData.virtualAddr/PageSize].physicalPage << ", offset: " <<(noffH.initData.virtualAddr % PageSize));
     }
-    DEBUG(dbgHw3,"-----------------------" << endl);
+//    DEBUG(dbgHw3,"-----------------------" << endl);
     delete executable;			// close file
     return TRUE;			// success
 }

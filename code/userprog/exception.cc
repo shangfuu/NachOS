@@ -111,15 +111,11 @@ ExceptionHandler(ExceptionType which)
         Error_VAddr = kernel->machine->ReadRegister(BadVAddrReg);   // the virtual addr makes page fault.
         vpn = (unsigned)Error_VAddr / PageSize;   // virtual page number
   
-        DEBUG(dbgHw3, "Page Fault, VirtAddr: " << Error_VAddr << ", vpn: " << vpn);       
         cout << "\n-------------------- Page Fault ---------------------" << endl; 
-       
         kernel->memManageUnit->pageFault(vpn);
-        DEBUG(dbgHw3, "currentThread = " << kernel->currentThread->getName());
         cout << "------------------------------------------------------\n" << endl;
         pageLock->Release();
         
-        DEBUG(dbgHw3, "Pagetable: " << &kernel->machine->pageTable[vpn] << endl);
         return;
 	default:
         cerr << "Unexpected user mode exception" << which << "\n";

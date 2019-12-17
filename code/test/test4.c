@@ -9,8 +9,8 @@ int main(){
     
     x[0] = 0;
     for(i=1;i<SIZE;++i){
-        x[i] = x[i] + i;
-        if(i>SIZE*4/5&& i % 2)
+        x[i] = x[i-1] + i;
+        if((i % 30 < 5))
             PrintInt(x[i]);
     }
     return 0;

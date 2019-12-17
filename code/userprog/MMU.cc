@@ -18,8 +18,8 @@ MMU::~MMU()
 
 void
 MMU::pageFault(unsigned int vpn){
-    DEBUG(dbgHw3, "MMU::pageFault vpn: " << vpn);
-    DEBUG(dbgHw3, "MMU::PageTable: " << &kernel->machine->pageTable[vpn]);
+//    DEBUG(dbgHw3, "MMU::pageFault vpn: " << vpn);
+//    DEBUG(dbgHw3, "MMU::PageTable: " << &kernel->machine->pageTable[vpn]);
 
     int victim = 0;
 
