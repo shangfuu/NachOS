@@ -247,6 +247,12 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
 
     // Do Real shit
     entry->use = TRUE;		// set the use, dirty bits
+    if(kernel->memManageUnit->getPagingType() == LRU){
+        kernel->physPageTable->load_time[pageFrame] = kernel->memManageUnit->counter;
+        kernel->memManageUnit->counter++;
+        if(pageFrame == 0)
+            DEBUG(dbgHw3,"toh toh lai: " << pageFrame);
+    }
     if (writing)
 	entry->dirty = TRUE;
     *physAddr = pageFrame * PageSize + offset;

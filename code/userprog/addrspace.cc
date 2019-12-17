@@ -180,7 +180,7 @@ AddrSpace::Load(char *fileName)
         pageTable[i].dirty = FALSE;
         pageTable[i].readOnly = FALSE;  
          
-        DEBUG(dbgHw3,"i: " << i << ", Free PhyPages: " << kernel->physPageTable->numFreePhyPages);
+//        DEBUG(dbgHw3,"i: " << i << ", Free PhyPages: " << kernel->physPageTable->numFreePhyPages);
 
         if(kernel->physPageTable->numFreePhyPages < 1){    // Not enough Physical page
             int sec = 0;
@@ -207,15 +207,23 @@ AddrSpace::Load(char *fileName)
             while(ppn < NumPhysPages && kernel->physPageTable->used[ppn] == USED){            
                 ppn++;                
             }                        
-            DEBUG(dbgHw3, "Free Physical Memory page #" << ppn );
+            
 
             pageTable[i].physicalPage = ppn;                           
             pageTable[i].valid = TRUE;            
             kernel->physPageTable->numFreePhyPages--;            
             kernel->physPageTable->used[ppn] = USED;
             kernel->physPageTable->virtPage[ppn] = i;
-            kernel->physPageTable->load_time[ppn] = kernel->memManageUnit->loading_time;
-            kernel->memManageUnit->loading_time++; 
+            if(kernel->memManageUnit->getPagingType() == FIFO){     // FIFO used
+                kernel->physPageTable->load_time[ppn] = kernel->memManageUnit->loading_time;
+                kernel->memManageUnit->loading_time++; 
+DEBUG(dbgHw3, "Free Physical Memory page #" << ppn << " loading time: " << kernel->memManageUnit->loading_time-1);
+            }
+            else{   // LRU used
+                kernel->physPageTable->load_time[ppn] = kernel->memManageUnit->counter;
+                kernel->memManageUnit->counter++;
+DEBUG(dbgHw3, "Free Physical Memory page #" << ppn << " counter: " << kernel->memManageUnit->counter-1);
+            }
 
             // Copy from Real disk to Physical Memory(Nachos), unit: page            
             executable->ReadAt( &(kernel->machine->mainMemory[ppn * PageSize]), PageSize, noffH.code.inFileAddr + (i*PageSize) );            

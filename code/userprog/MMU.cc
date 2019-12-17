@@ -8,6 +8,7 @@ MMU::MMU(PagingType t)
     type = t;
 //    victim = -1;  // out of save zone
     loading_time = 0;
+    counter = 0;
     DEBUG(dbgHw3, "MMU(" << type << ")");
 }
 
@@ -32,7 +33,7 @@ MMU::pageFault(unsigned int vpn){
         swap_in(vpn, victim);
     }
     else{
-        if(type == FIFO){
+        if(type == FIFO || type == LRU){
             // get the smallest load time page as victim
             victim = getVictim();
           
@@ -54,9 +55,6 @@ MMU::pageFault(unsigned int vpn){
 
             // swap out
             swap_out(buf, sec, virtPage);
-
-        }
-        else if(type == LRU){
 
         }
     }
