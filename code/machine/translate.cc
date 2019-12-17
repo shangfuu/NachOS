@@ -247,7 +247,8 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
 
     // Do Real shit
     entry->use = TRUE;		// set the use, dirty bits
-    if(kernel->memManageUnit->getPagingType() == LRU){
+//@shungfu: Edit at Hw3
+    if(kernel->memManageUnit->getPagingType() == LRU){  // LRU
         kernel->physPageTable->load_time[pageFrame] = kernel->memManageUnit->counter;
         kernel->memManageUnit->counter++; 
     }

@@ -62,6 +62,7 @@ MMU::pageFault(unsigned int vpn){
 
 int
 MMU::getVictim(){
+    // Get the smallest load time for FIFO and LRU
     int smallest = kernel->physPageTable->load_time[0];
     int victim = 0;
     for(int i=1;i <NumPhysPages;i++){
