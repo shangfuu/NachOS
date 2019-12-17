@@ -27,6 +27,8 @@ MMU::pageFault(unsigned int vpn){
         while(victim < NumPhysPages && kernel->physPageTable->used[victim] == USED){
             victim++;
         }
+        cout << "Found physical page " << victim << " free to use." << endl; 
+        cout << "Swap in " << kernel->currentThread->getName() <<  "'s virtual page: " << vpn << endl;
         swap_in(vpn, victim);
     }
     else{
@@ -44,8 +46,8 @@ MMU::pageFault(unsigned int vpn){
             // Get victim's virtaul page
             int virtPage = kernel->physPageTable->virtPage[victim];
             
-            cout << "Swap out physical page " << victim << endl;
-            cout << "Swap in virtual page " << vpn << endl;
+            cout << "Swap out physical page: " << victim << endl;
+            cout << "Swap in " << kernel->currentThread->getName() << "'s virtual page: " << vpn << endl;
 
             // swap in
             swap_in(vpn, victim);

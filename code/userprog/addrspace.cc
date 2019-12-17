@@ -99,8 +99,15 @@ AddrSpace::~AddrSpace()
     // Free physPageTable we have used, just turn the state to NOT_USED.
     for(int i = 0; i < numPages; i++){
         int physPage = pageTable[i].physicalPage;
-        kernel->physPageTable->CleanUp(physPage);
+        if(pageTable[i].valid == TRUE){    // Clean up physical page
+            kernel->physPageTable->CleanUp(physPage);
+            cout << "Physical page " << physPage << " cleaning up." << endl;
+        }
+        else{   // clean up Vm Disk
+            kernel->vmDisk->SectorUsed[physPage] = NOT_USED;
+        }
     }
+    
     DEBUG(dbgHw3, "Physical page cleaning up =======>");
     delete pageTable;
 }
@@ -189,7 +196,7 @@ AddrSpace::Load(char *fileName)
 
             // Copy from Real disk to SynchDisk(Nachos), unit: page, ReadAt(char* into, int numBytes, int position)                                          
             char *buffer = new char [PageSize];
-            DEBUG(dbgHw3,"sec: " << sec);
+            DEBUG(dbgHw3, "No Free Physiacal Memory Page, get free disk sector: " << sec);
             executable->ReadAt( buffer, PageSize, noffH.code.inFileAddr + (i*PageSize) );
             kernel->vmDisk->WriteSector(sec, buffer);
         }        
@@ -200,18 +207,20 @@ AddrSpace::Load(char *fileName)
             while(ppn < NumPhysPages && kernel->physPageTable->used[ppn] == USED){            
                 ppn++;                
             }                        
+            DEBUG(dbgHw3, "Free Physical Memory page #" << ppn );
+
             pageTable[i].physicalPage = ppn;                           
             pageTable[i].valid = TRUE;            
             kernel->physPageTable->numFreePhyPages--;            
             kernel->physPageTable->used[ppn] = USED;
             kernel->physPageTable->virtPage[ppn] = i;
             kernel->physPageTable->load_time[ppn] = kernel->memManageUnit->loading_time;
-            kernel->memManageUnit->loading_time++;
-            DEBUG(dbgHw3,"PPN: " << ppn); 
+            kernel->memManageUnit->loading_time++; 
 
             // Copy from Real disk to Physical Memory(Nachos), unit: page            
             executable->ReadAt( &(kernel->machine->mainMemory[ppn * PageSize]), PageSize, noffH.code.inFileAddr + (i*PageSize) );            
         }        
+        DEBUG(dbgHw3, "Put " << kernel->currentThread->getName() << "'s vpn " << i << " in.");
     }
     DEBUG(dbgHw3,"\n-----------------------");
     DEBUG(dbgHw3, "code.infileAddr: " << noffH.code.inFileAddr << ", code.virtualAddr: " << noffH.code.virtualAddr);
