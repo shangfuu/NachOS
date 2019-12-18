@@ -161,14 +161,10 @@ Scheduler::GetNextToRun()
     
     Thread *firstThread = iter->Item();
     bool Found = false;
-    DEBUG(dbgHw2,"Next to Run");
+
     // Run the ReadyList
     while(iter->Item()->getArrivalTime() <= Thread::currentTime){
         Found = true;
-        DEBUG(dbgHw2,firstThread->getName() << ",a" << firstThread->getArrivalTime() << ",b" << firstThread->getBurstTime());
-        DEBUG(dbgHw2,iter->Item()->getName() << ",a" << iter->Item()->getArrivalTime() << ",b" << iter->Item()->getBurstTime());
-        DEBUG(dbgHw2, "currentTime: " << Thread::currentTime); 
-
         if(iter->Item()->getBurstTime() < firstThread->getBurstTime()){
             firstThread = iter->Item();
         }
@@ -177,13 +173,12 @@ Scheduler::GetNextToRun()
         if(iter->IsDone()) break;
     }
 
-        if(!Found){ // No thread is arrived
+    if(!Found){ // No thread is arrived
         // Advance time
-        DEBUG(dbgHw2,"dra down :"  << firstThread->getName() << endl);
+        DEBUG(dbgHw2,"Advance :"  << firstThread->getName() << endl);
         Thread::currentTime = firstThread->getArrivalTime();
     }
 
-    DEBUG(dbgHw2,"Go Run: " << firstThread->getName() << endl);
     readyList->Remove(firstThread);
     return firstThread;
 }
