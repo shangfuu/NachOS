@@ -424,15 +424,15 @@ SimpleThread()
 {
     Thread *thread = kernel->currentThread;
     while (thread->getBurstTime() > 0) {
+       
         thread->setBurstTime(thread->getBurstTime() - 1);
-    	printf("%s: %d\n", kernel->currentThread->getName(), kernel->currentThread->getBurstTime());
-        printf("%d\n",Thread::currentTime);
+    	DEBUG(dbgHw2,"Current time: " << Thread::currentTime);
+        printf("%s: %d\n", kernel->currentThread->getName(), kernel->currentThread->getBurstTime()); 
         
         kernel->interrupt->OneTick();
         if(kernel->scheduler->getSchedulerType() == SRTF)
-            kernel->currentThread->Yield();
+            kernel->currentThread->Yield(); // will find next to run
 
-        
         Thread::currentTime++;  // burst
     }    
 }
