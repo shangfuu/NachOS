@@ -31,6 +31,7 @@ const char dbgNet = 'n'; 		// network emulation (NETWORK)
 const char dbgView = 'v';
 const char dbgHw3 = '3';
 const char dbgHw3T = 'l';
+const char dbgHw2 = '2';
 
 class Debug {
   public:

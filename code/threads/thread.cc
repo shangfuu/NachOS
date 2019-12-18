@@ -425,11 +425,15 @@ SimpleThread()
     Thread *thread = kernel->currentThread;
     while (thread->getBurstTime() > 0) {
         thread->setBurstTime(thread->getBurstTime() - 1);
-        Thread::currentTime++;  // burst
-
     	printf("%s: %d\n", kernel->currentThread->getName(), kernel->currentThread->getBurstTime());
-        // kernel->currentThread->Yield();
-	    kernel->interrupt->OneTick();
+        printf("%d\n",Thread::currentTime);
+        
+        kernel->interrupt->OneTick();
+        if(kernel->scheduler->getSchedulerType() == SRTF)
+            kernel->currentThread->Yield();
+
+        
+        Thread::currentTime++;  // burst
     }    
 }
 
@@ -446,9 +450,9 @@ Thread::SelfTest()
     
     const int number 	 = 5;
     char *name[number] 	 = {"A", "B", "C", "D", "E"};
-    int burst[number] 	 = {1, 2, 3, 2, 1};
+    int burst[number] 	 = {1, 7, 2, 7, 1};
     int priority[number] = {4, 5, 3, 1, 2};
-    int arrival[number] = {1, 1, 2, 3, 4};
+    int arrival[number] = {1, 1, 3, 4, 5};
 
     Thread *t;
     for (int i = 0; i < number; i++) {

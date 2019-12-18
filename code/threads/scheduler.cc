@@ -160,28 +160,30 @@ Scheduler::GetNextToRun()
     ListIterator<Thread *> *iter = new ListIterator<Thread *>(readyList);
     
     Thread *firstThread = iter->Item();
-
+    bool Found = false;
+    DEBUG(dbgHw2,"Next to Run");
     // Run the ReadyList
-    while(iter->Item()->getArrivalTime() < Thread::currentTime){
-        
-        iter->Next();
-        if(iter->IsDone()) break;
-        
+    while(iter->Item()->getArrivalTime() <= Thread::currentTime){
+        Found = true;
+        DEBUG(dbgHw2,firstThread->getName() << ",a" << firstThread->getArrivalTime() << ",b" << firstThread->getBurstTime());
+        DEBUG(dbgHw2,iter->Item()->getName() << ",a" << iter->Item()->getArrivalTime() << ",b" << iter->Item()->getBurstTime());
+        DEBUG(dbgHw2, "currentTime: " << Thread::currentTime); 
+
         if(iter->Item()->getBurstTime() < firstThread->getBurstTime()){
             firstThread = iter->Item();
         }
-        
+       
+        iter->Next();
+        if(iter->IsDone()) break;
     }
-    // I got something
-    if(!iter->IsDone()){
-    //    readyList->Remove(firstThread);
-    //    return firstThread;
-    } else{ // Get a Null
+
+        if(!Found){ // No thread is arrived
         // Advance time
+        DEBUG(dbgHw2,"dra down :"  << firstThread->getName() << endl);
         Thread::currentTime = firstThread->getArrivalTime();
-    //   readyList->Remove(firstThread);
-    //    return firstThread;
     }
+
+    DEBUG(dbgHw2,"Go Run: " << firstThread->getName() << endl);
     readyList->Remove(firstThread);
     return firstThread;
 }
