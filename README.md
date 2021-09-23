@@ -48,8 +48,6 @@ test1 從 9 往下遞減，test2 從 20 網上遞增，但是下圖可以看test
 ## 測試程式
 <img src="./figures/test3.png" width = "20%" />
 
-## FIFO
-<img src="./figures/FIFO3 - 1.png" width = "40%" />
-
-## LRU
-<img src="./figures/LRU3.png" width = "40%" />
+| FIFO | LRU |
+| ---- | --- |
+| <img src="./figures/FIFO3 - 1.png" width = "40%" /> | <img src="./figures/LRU3.png" width = "40%" /> |
