@@ -50,4 +50,4 @@ test1 從 9 往下遞減，test2 從 20 網上遞增，但是下圖可以看test
 
 | FIFO | LRU |
 | ---- | --- |
-| <img src="./figures/FIFO3 - 1.png" width = "40%" /> | <img src="./figures/LRU3.png" width = "40%" /> |
+| <img src="./figures/FIFO3 - 1.png" width = "80%" /> | <img src="./figures/LRU3.png" width = "100%" /> |
