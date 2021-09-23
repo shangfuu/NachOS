@@ -9,7 +9,7 @@ NachOS 是一個教學用的作業系統，內容有很多未實作完成的功�
 # Project 1 - Implement Syscall Sleep
 了解 SYSCALL 流程並完成 SYSCALL sleep。
 
-<img src="./figures/pj1.png" width = "80%" />
+<img src="./figures/pj1.png" width = "50%" />
 
 # Project 2 - CPU schedular
 原先的 NachOS 載入兩個程式後，會覆蓋相同的 code segment，因此需要為實體記憶體位址做一些轉換，實現 multi-programming (multi-thread)。
@@ -18,7 +18,7 @@ NachOS 是一個教學用的作業系統，內容有很多未實作完成的功�
 
 錯誤範例圖如下，\
 test1 從 9 往下遞減，test2 從 20 網上遞增，但是下圖可以看test1 切到 test2 後再切回後也變成遞增了。
-<img src="./figures/err2.png" width = "90%" />
+<img src="./figures/err2.png" width = "50%" />
 
 需要完成的 CPU Schedular 如下：
 - 修正上述衝突
@@ -27,31 +27,29 @@ test1 從 9 往下遞減，test2 從 20 網上遞增，但是下圖可以看test
 - SRTF
 
 ## Code Segment 修正結果
-<img src="./figures/fixed2.png" width = "80%" />
+<img src="./figures/fixed2.png" width = "50%" />
 
 ## FCFS
-<img src="./figures/FCFS.png" width = "80%" />
+<img src="./figures/FCFS.png" width = "50%" />
 
 
 ## 測試程式 for SJF & SRTF
-<img src="./figures/test2.png" width = "80%" />
+<img src="./figures/test2.png" width = "30%" />
 
 | SJF | SRTF |
 | ---- | ---- |
-| <img src="./figures/SJF.png" width = "200%" /> | <img src="./figures/SRTF.png" width = "200%" /> |
+| <img src="./figures/SJF.png" width = "100%" /> | <img src="./figures/SRTF.png" width = "100%" /> |
 
 # Project 3 - Virtual Memory
 
-- 實現 virtual meory 並可以處理 page fault。
-- 實作 Page Replacement Algorithm 的 FIFO 與 LRU。
-    - FIFO
-    - LRU
+實現 virtual meory 並可以處理 page fault。\
+實作 Page Replacement Algorithm 的 FIFO 與 LRU。
 
 ## 測試程式
-<img src="./figures/test3.png" width = "50%" />
+<img src="./figures/test3.png" width = "20%" />
 
 ## FIFO
-<img src="./figures/FIFO3 - 1.png" width = "80%" />
+<img src="./figures/FIFO3 - 1.png" width = "40%" />
 
 ## LRU
-<img src="./figures/LRU3.png" width = "80%" />
+<img src="./figures/LRU3.png" width = "40%" />
